@@ -1,0 +1,54 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(ls *)",
+      "Bash(npm test *)",
+      "Bash(npm run *)",
+      "Bash(pytest *)"
+    ],
+    "ask": [
+      "Bash(git push *)",
+      "Bash(gh *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(rsync *)",
+      "Bash(sendmail *)",
+      "Bash(mail *)",
+      "Bash(npm publish *)",
+      "Bash(rm *)",
+      "Bash(rmdir *)",
+      "Bash(unlink *)",
+      "Bash(git clean *)",
+      "Bash(git branch -D *)",
+      "Bash(git reset --hard *)",
+      "WebFetch",
+      "WebSearch",
+      "mcp__*"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Read(~/.ssh/**)",
+      "Read(//**/.env)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "allowUnsandboxedCommands": false,
+    "failIfUnavailable": true,
+    "network": {
+      "allowedDomains": []
+    }
+  }
+}

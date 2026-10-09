@@ -1,0 +1,1 @@
+BROKEN input that every honest gate must reject

@@ -1,0 +1,54 @@
+// Tier 2: guardian. Reads, searches memory, reports. No sending, no deleting,
+// no writing, no shell, no web, no plugins. Tight scope.
+// Doc pages (read 2026-10-10, no OpenClaw version is stated on them):
+//   [TP] https://docs.openclaw.ai/gateway/config-tools/tool-policy
+//   [PM] https://docs.openclaw.ai/gateway/security/tool-permissions
+//   [EA] https://docs.openclaw.ai/tools/exec-approvals
+//   [HB] https://docs.openclaw.ai/gateway/security/hardened-baseline
+//   [SB] https://docs.openclaw.ai/gateway/sandboxing/modes-scope-and-backend
+// Companion command (CLI, not config; refuses to run while a Gateway is live [EA]):
+//   openclaw exec-policy preset deny-all
+//   (host=gateway, security=deny, ask=off, askFallback=deny [EA])
+//
+// "read" stays available through profile "coding". [TP] says denying `write` does
+// not deny `apply_patch`, so each file-mutating tool is listed. group:fs cannot be
+// denied whole here because it contains `read`.
+{
+  tools: {
+    profile: "coding", // [TP]
+    deny: [
+      "group:runtime", // [TP] exec, process, code_execution
+      "write", // [TP]
+      "edit",
+      "apply_patch",
+      "group:messaging", // [TP] message
+      "group:automation", // [TP] gateway, plugins, automations, ...
+      "group:nodes", // [TP]
+      "group:web", // [TP] web_search, x_search, web_fetch
+      "group:ui", // [TP] browser, canvas, ...
+      "group:media", // [TP] image/music/video generation, tts, pdf
+      "group:plugins", // [TP] plugin tools, including MCP servers via bundle-mcp
+      "sessions_spawn", // [PM] also in the hardened baseline deny list [HB]
+      "sessions_send", // [PM][HB]
+      "conversations_send", // [TP]
+      "subagents", // [TP]
+    ],
+    exec: { mode: "deny" }, // [EA] "Block host exec."
+    fs: { workspaceOnly: true }, // [PM]
+    elevated: { enabled: false }, // [HB]
+    sessions: { visibility: "self" }, // [PM] self | tree | agent | all
+    agentToAgent: { enabled: false }, // [HB]
+    message: {
+      crossContext: { allowWithinProvider: false, allowAcrossProviders: false }, // [PM]
+    },
+  },
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: "all", // [SB]
+        scope: "agent", // [PM]
+        workspaceAccess: "ro", // [PM] workspace mounted read-only at /agent
+      },
+    },
+  },
+}

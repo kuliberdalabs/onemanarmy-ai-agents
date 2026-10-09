@@ -1,0 +1,1 @@
+clean input that every honest gate must accept

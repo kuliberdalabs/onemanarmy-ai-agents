@@ -1,0 +1,21 @@
+FAKTURA VAT nr FV 09/2026/31
+
+Sprzedawca: Kamienica Coworking sp. z o.o.
+ul. Przykładowa 12, 00-000 Warszawa
+biuro@kamienica-coworking.invalid
+
+Nabywca: Twoja Firma (dane z umowy)
+
+Data wystawienia: 01.09.2026
+Data sprzedaży: 01.09.2026
+Termin płatności: 08.09.2026
+
+Lp. | Nazwa                              | Netto      | VAT 23%  | Brutto
+1   | Biurko stałe, wrzesień 2026        | 1 000,00   | 230,00   | 1 230,00
+
+Razem netto: 1 000,00 zł
+Razem VAT:     230,00 zł
+Razem brutto: 1 230,00 zł
+
+Do zapłaty: 1 230,00 zł
+Słownie: jeden tysiąc dwieście trzydzieści złotych 00/100

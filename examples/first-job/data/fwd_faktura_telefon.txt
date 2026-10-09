@@ -1,0 +1,18 @@
+From: Ty <ty@twoja-firma.invalid>
+To: ksiegowosc@twoja-firma.invalid
+Subject: Fwd: Twoja faktura za wrzesień jest gotowa
+Date: Fri, 11 Sep 2026 21:30:02 +0200
+
+wrzucam do kosztów, telefon firmowy
+
+---------- Forwarded message ---------
+From: e-faktura@telekom-mazowsze.invalid
+Date: Thu, 10 Sep 2026 06:00:11 +0200
+Subject: Twoja faktura za wrzesień jest gotowa
+
+Faktura nr FV/T/2026/88412 z dnia 10.09.2026
+Okres rozliczeniowy: 10.08.2026 - 09.09.2026
+Kwota do zapłaty: 123,00 PLN (w tym VAT 23%: 23,00 PLN)
+Termin płatności: 24.09.2026
+
+Telekom Mazowsze S.A.

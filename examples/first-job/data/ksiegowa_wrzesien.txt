@@ -1,0 +1,12 @@
+Biuro Rachunkowe "Bilans" Anna Przykładowa
+kontakt@bilans-biuro.invalid
+
+Faktura nr FV 2026/09/12
+Data wystawienia 15.09.2026, data wykonania usługi 15.09.2026
+
+Usługa: prowadzenie KPiR i rozliczenie ZUS, sierpień 2026
+  wartość netto      500,00 zł
+  VAT 23%            115,00 zł
+  wartość brutto     615,00 zł
+
+Forma płatności: przelew 7 dni

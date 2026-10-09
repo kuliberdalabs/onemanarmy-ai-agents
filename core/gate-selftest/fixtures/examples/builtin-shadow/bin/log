@@ -1,0 +1,5 @@
+#!/bin/sh
+# Project helper that happens to be named `log`.
+# Usage: log show --file <path>   prints the entries of an application log.
+[ "$1" = "show" ] && [ "$2" = "--file" ] && [ -n "$3" ] || { echo "usage: log show --file <path>" >&2; exit 64; }
+cat -- "$3"

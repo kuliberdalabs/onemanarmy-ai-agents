@@ -1,0 +1,36 @@
+# registry.yaml: gate-selftest entries for the first-job acceptance gate.
+#
+# Unlike core/gate-selftest/registry.example.yaml, every entry here should land
+# in PASS, so the run exits 0:
+#
+#   python3 ../../../core/gate-selftest/selftest.py --registry registry.yaml
+#
+# Each entry judges the bad side by its finding line (detect), not by the exit
+# code alone: a gate that crashed on the bad fixture would also exit non-zero,
+# and that must not count as catching the failure.
+
+version: 1
+
+instruments:
+
+  - id: first_job_duplicate
+    what: "Reject a ledger that books the forwarded copy of the phone invoice as a second expense."
+    protects: money
+    cmd: [python3, "{here}/check_ledger.py", "{input}"]
+    bad: fixtures/bad
+    good: fixtures/good
+    expect_bad: detect
+    detect_bad: '^FAIL: duplicate counted twice: .*FV/T/2026/88412'
+    expect_good: exit
+    notes: "Both phone files are read correctly here; nobody compared the invoice numbers."
+
+  - id: first_job_guessed
+    what: "Reject a ledger that enters a guessed amount for the unreadable scan."
+    protects: money
+    cmd: [python3, "{here}/check_ledger.py", "{input}"]
+    bad: fixtures/bad-guessed
+    good: fixtures/good
+    expect_bad: detect
+    detect_bad: '^FAIL: guessed row: .*skan_0007\.txt'
+    expect_good: exit
+    notes: "The summary even admits the guess; only the ledger row decides what the accountant books."

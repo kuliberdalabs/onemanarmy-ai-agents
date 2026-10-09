@@ -1,0 +1,18 @@
+        STACJA PALIW "ZAKRĘT"
+      ul. Drogowa 1, 00-000 Miasto
+            NIP 000-000-00-00
+2026-09-05 17:41                  nr wydr. 4471
+          PARAGON FISKALNY
+ON EFEKT  dystr.3   45,02 l x 6,49
+                              292,18 A
+HOT-DOG  1 x 9,99              9,99 B
+KAWA L   1 x 10,30            10,30 B
+---------------------------------------
+SPRZEDAŻ OPODATK. A           292,18
+PTU A 23%                      54,64
+SPRZEDAŻ OPODATK. B            20,29
+PTU B 8%                        1,50
+SUMA PTU                       56,14
+SUMA PLN                      312,47
+---------------------------------------
+KARTA PŁATNICZA               312,47

@@ -1,0 +1,18 @@
+From: faktury@serwerownia-polnoc.invalid
+Subject: Faktura FV/2026/09/0147 za usługi hostingowe
+Date: Wed, 2 Sep 2026 07:12:44 +0200
+
+Dzień dobry,
+
+w załączeniu przesyłamy fakturę za wrzesień.
+
+  Numer:        FV/2026/09/0147
+  Data:         2026-09-02
+  Usługa:       Serwer VPS S2 + kopie zapasowe, 09/2026
+  Netto:        150,00 PLN
+  VAT 23%:      34,50 PLN
+  Brutto:       184,50 PLN
+
+Płatność pobrana automatycznie z karty.
+
+Serwerownia Północ sp. z o.o.

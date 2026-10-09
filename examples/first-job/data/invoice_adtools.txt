@@ -1,0 +1,16 @@
+AdTools OU
+Tallinn, Estonia
+billing@adtools.invalid
+
+INVOICE INV-20931
+Invoice date: Sep 11, 2026
+Billing period: Sep 11, 2026 to Oct 10, 2026
+
+Description                     Qty   Unit price   Amount
+Ad scheduler, Starter plan       1     EUR 49.00   EUR 49.00
+
+Subtotal                                          EUR 49.00
+VAT (reverse charge, Art. 196)                     EUR 0.00
+Total                                             EUR 49.00
+
+Paid by card ending 0000 on Sep 11, 2026.

@@ -1,0 +1,12 @@
+date,vendor,document_no,category,amount_pln,currency,original_amount,source_file
+2026-09-01,Kamienica Coworking sp. z o.o.,FV 09/2026/31,rent,1230.00,PLN,1230.00,faktura_biuro_wrzesien.txt
+2026-09-02,Serwerownia Północ sp. z o.o.,FV/2026/09/0147,software,184.50,PLN,184.50,2026-09-02_hosting.txt
+2026-09-05,"Stacja Paliw ""Zakręt""",4471,travel,312.47,PLN,312.47,paragon_stacja.txt
+2026-09-08,Papiernik Kowalczyk,,office,87.90,PLN,87.90,IMG_4471.txt
+2026-09-10,Telekom Mazowsze S.A.,FV/T/2026/88412,phone,123.00,PLN,123.00,fwd_faktura_telefon.txt
+2026-09-10,Telekom Mazowsze S.A.,FV/T/2026/88412,phone,123.00,PLN,123.00,telefon_wrzesien_faktura.txt
+2026-09-11,AdTools OU,INV-20931,marketing,209.23,EUR,49.00,invoice_adtools.txt
+2026-09-15,"Biuro Rachunkowe ""Bilans"" Anna Przykładowa",FV 2026/09/12,accounting,615.00,PLN,615.00,ksiegowa_wrzesien.txt
+2026-09-18,Fundacja Przykładowa Wiedza,MF26-00318,training,1476.00,PLN,1476.00,szkolenie.txt
+2026-09-22,Przejazdy Wiślane,PW-2209-7781,travel,46.80,PLN,46.80,taxi_2026-09-22.txt
+2026-09-25,Rejestr Domen PL,RD/2026/52771,software,98.40,PLN,98.40,domena_odnowienie.txt

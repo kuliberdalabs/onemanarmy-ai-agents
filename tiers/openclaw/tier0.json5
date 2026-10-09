@@ -1,0 +1,44 @@
+// Tier 0: full freedom. Run ONLY on a separate machine or OS account that holds
+// nothing you cannot lose (see ../README.md, "Why tier 0 needs its own machine").
+//
+// Config fragment: merge it into the instance config, do not replace the file.
+// Doc pages (read 2026-10-10, no OpenClaw version is stated on them):
+//   [TP] https://docs.openclaw.ai/gateway/config-tools/tool-policy
+//   [PM] https://docs.openclaw.ai/gateway/security/tool-permissions
+//   [EA] https://docs.openclaw.ai/tools/exec-approvals
+//   [HB] https://docs.openclaw.ai/gateway/security/hardened-baseline
+//   [SB] https://docs.openclaw.ai/gateway/sandboxing/modes-scope-and-backend
+// Companion command (CLI, not config; refuses to run while a Gateway is live [EA]):
+//   openclaw exec-policy preset yolo
+{
+  tools: {
+    // [TP] tools.profile: minimal | coding | messaging | full. "full" = no core filtering.
+    profile: "full",
+    // [TP] tools.deny: deny wins, group:* names allowed. Empty on purpose at tier 0.
+    deny: [],
+    // [EA] tools.exec.mode: deny | allowlist | ask | auto | full. "full" = no routine prompts.
+    // Note: [HB] writes tools.exec.security / tools.exec.ask instead. The two pages
+    // disagree on key names. UNVERIFIED which spelling a given release accepts;
+    // we follow [EA] because it lists the allowed values.
+    exec: { mode: "full" },
+    // [PM] tools.fs.workspaceOnly (optional, documented as true-able).
+    fs: { workspaceOnly: false },
+    // [HB] tools.elevated.enabled (the baseline sets it to false).
+    elevated: { enabled: true },
+    // [PM] tools.sessions.visibility: self | tree | agent | all.
+    sessions: { visibility: "all" },
+    // [HB] tools.agentToAgent.enabled.
+    agentToAgent: { enabled: true },
+  },
+  agents: {
+    defaults: {
+      sandbox: {
+        // [SB] agents.defaults.sandbox.mode: off | non-main | all.
+        mode: "off",
+        // [PM] agents.defaults.sandbox.workspaceAccess: none | ro | rw.
+        // Moot while the sandbox is off, kept so every tier has the same keys.
+        workspaceAccess: "rw",
+      },
+    },
+  },
+}

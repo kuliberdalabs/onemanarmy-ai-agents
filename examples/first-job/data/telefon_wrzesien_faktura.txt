@@ -1,0 +1,15 @@
+TELEKOM MAZOWSZE S.A.
+e-faktura@telekom-mazowsze.invalid
+
+FAKTURA VAT
+Nr: FV/T/2026/88412
+Data wystawienia: 2026-09-10
+Okres: 2026-08-10 do 2026-09-09
+Numer konta klienta: 0000000
+
+Abonament Firma M                        100,00 zł netto
+Podatek VAT 23%                           23,00 zł
+-------------------------------------------------------
+RAZEM BRUTTO                             123,00 zł
+
+Termin płatności: 2026-09-24

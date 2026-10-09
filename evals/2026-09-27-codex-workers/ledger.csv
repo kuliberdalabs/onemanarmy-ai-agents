@@ -1,0 +1,14 @@
+date,task,model_id,effort,cli,sandbox,wall_s,input_tokens,cached_input_tokens,output_tokens,result,controller_corrections,accepted_unchanged
+2026-09-27,simulation-oracle/reminder-clock,gpt-6-sol,high,codex-cli 0.157.1,workspace-write,790,3869619,3737984,29297,accepted,0,yes
+2026-09-27,simulation-oracle/reminder-clock,gpt-6-luna,high,codex-cli 0.157.1,workspace-write,1669,9117881,8921600,59193,rejected,n/a,no
+2026-09-27,generation/corpus-70,gpt-6-sol,medium,codex-cli 0.157.1,workspace-write,225,199869,153088,10373,accepted,0,yes
+2026-09-27,generation/corpus-70,gpt-6-luna,medium,codex-cli 0.157.1,workspace-write,199,338435,295680,7879,corrected,4,no
+2026-09-27,labelling/blind-70,gpt-6-sol,medium,codex-cli 0.157.1,workspace-write,136,202388,156032,6495,corrected,2,no
+2026-09-27,labelling/blind-70,gpt-6-luna,medium,codex-cli 0.157.1,workspace-write,120,303869,246272,5823,corrected,2,no
+2026-09-27,generation/hard-cases-15,gpt-6-sol,medium,codex-cli 0.157.1,workspace-write,164,208046,164480,8247,accepted,0,yes
+2026-09-27,labelling/blind-hard-15,gpt-6-luna,medium,codex-cli 0.157.1,workspace-write,41,95602,65792,1651,accepted,0,yes
+2026-09-27,guarded-code/test-controller,gpt-6-sol,high,codex-cli 0.157.1,workspace-write,380,1252215,1163392,18213,corrected,3,no
+2026-09-27,guarded-code/test-controller,gpt-6-luna,high,codex-cli 0.157.1,workspace-write,374,995772,913152,19059,corrected,3,no
+2026-09-27,logic-fix/classifier-rules,gpt-6-sol,high,codex-cli 0.157.1,workspace-write,528,2427210,2322688,21674,superseded,0,no
+2026-09-27,logic-fix/classifier-rules,gpt-6-luna,high,codex-cli 0.157.1,workspace-write,652,4072593,3941632,26311,rejected,n/a,no
+2026-09-27,logic-fix/classifier-rules-round2,gpt-6-sol,medium,codex-cli 0.157.1,workspace-write,202,909795,856192,9022,accepted,0,yes

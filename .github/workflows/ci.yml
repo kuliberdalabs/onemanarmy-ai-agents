@@ -1,0 +1,67 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install zsh and procps
+        run: sudo apt-get update && sudo apt-get install -y zsh procps
+
+      - name: Tool versions
+        run: |
+          python3 --version
+          bash --version | head -n 1
+          zsh --version
+
+      - name: Unit tests (gate-selftest)
+        run: python3 -m unittest discover tests -v
+
+      - name: Pitfall reproducers
+        run: bash tests/test_pitfalls.sh
+
+      - name: Skill validator
+        run: python3 scripts/validate_skill.py core/skills/session-end
+
+      - name: doctrine-guard selftest
+        run: bash core/hooks/doctrine-guard/doctrine-guard.sh --selftest
+
+      - name: Tier overlays static check
+        run: python3 tiers/tiercheck.py
+
+      - name: gate-selftest meta triangle
+        run: python3 core/gate-selftest/selftest.py --meta-only
+
+      - name: Example registry finds its three naive gates
+        # Exit 1 is the expected result: the naive gates are the findings.
+        run: |
+          set +e
+          python3 core/gate-selftest/selftest.py --registry core/gate-selftest/registry.example.yaml --json "$RUNNER_TEMP/selftest.json"
+          rc=$?
+          set -e
+          test "$rc" -eq 1
+          python3 - "$RUNNER_TEMP/selftest.json" <<'PY'
+          import json, sys
+          results = json.load(open(sys.argv[1]))["results"]
+          got = {r["id"]: r["bucket"] for r in results}
+          want = {
+              "builtin_shadow_naive": "CANNOT-FAIL",
+              "status_counter_naive": "CANNOT-FAIL",
+              "word_split_naive": "CANNOT-FAIL",
+              "builtin_shadow_fixed": "PASS",
+              "status_counter_fixed": "PASS",
+              "word_split_fixed": "PASS",
+          }
+          if got != want:
+              sys.exit(f"unexpected buckets: {got}")
+          print("example registry: 3 CANNOT-FAIL, 3 PASS, as expected")
+          PY

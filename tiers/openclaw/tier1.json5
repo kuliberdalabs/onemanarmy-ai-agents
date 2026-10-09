@@ -1,0 +1,55 @@
+// Tier 1: works freely inside its workspace, asks before outward actions.
+// Doc pages (read 2026-10-10, no OpenClaw version is stated on them):
+//   [TP] https://docs.openclaw.ai/gateway/config-tools/tool-policy
+//   [PM] https://docs.openclaw.ai/gateway/security/tool-permissions
+//   [EA] https://docs.openclaw.ai/tools/exec-approvals
+//   [HB] https://docs.openclaw.ai/gateway/security/hardened-baseline
+//   [SB] https://docs.openclaw.ai/gateway/sandboxing/modes-scope-and-backend
+// Companion command (CLI, not config; refuses to run while a Gateway is live [EA]):
+//   openclaw exec-policy preset cautious
+//   (host=gateway, security=allowlist, ask=on-miss, askFallback=deny [EA])
+//
+// KNOWN GAP, UNVERIFIED on the docs of 2026-10-10: OpenClaw documents an approval
+// prompt for host exec [EA] but no approval gate for "message send", file delete or
+// publish done through other tools. So this tier cannot ASK before sending; it
+// denies the messaging tools instead, and the agent drafts while a person sends.
+// Deleting is only possible through exec (write/edit/apply_patch cannot delete),
+// so deletes do go through the exec allowlist and ask.
+{
+  tools: {
+    // [TP]
+    profile: "coding",
+    deny: [
+      "group:messaging", // [TP] member: message. No documented ask gate, see gap above.
+      "gateway", // [TP] group:automation member. Lets an agent change its own config.
+      "plugins", // [TP] group:automation member. Installs code.
+      "group:nodes", // [TP] nodes, computer. Reaches other devices.
+      "browser", // [TP] group:ui member. Logging in and submitting forms are outward actions.
+      "conversations_send", // [TP] group:sessions members that talk to other conversations.
+      "sessions_send",
+    ],
+    // [EA] "ask" = "Use allowlist policy and ask on misses."
+    exec: { mode: "ask" },
+    // [PM]
+    fs: { workspaceOnly: true },
+    // [HB]
+    elevated: { enabled: false },
+    // [PM]
+    sessions: { visibility: "tree" },
+    // [HB]
+    agentToAgent: { enabled: false },
+    // [PM] cross-context messaging switches (verbatim key names from the page).
+    message: {
+      crossContext: { allowWithinProvider: false, allowAcrossProviders: false },
+    },
+  },
+  agents: {
+    defaults: {
+      sandbox: {
+        mode: "all", // [SB]
+        scope: "agent", // [PM] agent | session | shared
+        workspaceAccess: "rw", // [PM] workspace mounted read/write at /workspace
+      },
+    },
+  },
+}

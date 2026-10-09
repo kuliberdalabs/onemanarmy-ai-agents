@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "defaultMode": "dontAsk",
+    "disableBypassPermissionsMode": "disable",
+    "disableAutoMode": "disable",
+    "blockReadsOutsideWorkingDirectories": true,
+    "allow": [
+      "Read",
+      "Grep",
+      "Glob"
+    ],
+    "ask": [],
+    "deny": [
+      "Bash(sudo *)",
+      "Read(~/.ssh/**)",
+      "Read(//**/.env)",
+      "Edit",
+      "Write",
+      "NotebookEdit",
+      "Bash",
+      "PowerShell",
+      "WebFetch",
+      "WebSearch",
+      "mcp__*"
+    ]
+  }
+}

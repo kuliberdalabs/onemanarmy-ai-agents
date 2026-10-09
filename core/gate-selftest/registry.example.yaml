@@ -1,0 +1,91 @@
+# registry.example.yaml: three example gates, each in a naive and a fixed form.
+#
+# Each naive gate reproduces one real incident class. gate-selftest must file
+# every naive gate as CANNOT-FAIL and every fixed gate as PASS, so this run
+# exits 1 on purpose: the findings are the point.
+#
+#   python3 selftest.py --registry registry.example.yaml
+#
+# FIELDS
+#   id                 stable key, used by --only
+#   what               what the gate checks, one sentence
+#   protects           free-form tag for --protects (money, deploy, publish, ...)
+#   cmd                argv list (zsh -f skips user startup files, so runs
+#                      match on any machine); placeholders: {input} fixture path,
+#                      {here} directory of this registry, {root} selftest dir,
+#                      {tmp} a scratch dir removed after the run
+#   bad / good         fixture paths, relative to this registry's directory
+#   expect_bad         exit (non-zero exit = rejected) | detect (detect_bad matches)
+#   expect_good        exit (zero exit = accepted)     | detect (detect_good matches)
+#   detect_bad/good    regex, searched in stdout+stderr, multiline
+#   timeout            seconds, default 60
+#   notes              what a reader should know before trusting the verdict
+#   no_fixture_reason  why the pair is missing (the gate lands in NO-FIXTURE)
+#
+# FORMAT
+#   A small YAML subset, parsed without third-party libraries: flat entries,
+#   plain or quoted scalars, flow lists. Quote anything with { } or ": ".
+#   Single quotes keep backslashes literal, which suits regexes.
+
+version: 1
+
+instruments:
+
+  # A shell builtin shadows the command the check meant to run.
+  - id: builtin_shadow_naive
+    what: "Fail when the app log has ERROR entries; calls `log`, which zsh resolves to its builtin."
+    protects: verification
+    cmd: [zsh, -f, "{here}/fixtures/examples/builtin-shadow/gate_naive.zsh", "{input}"]
+    bad: fixtures/examples/builtin-shadow/bad_app.log
+    good: fixtures/examples/builtin-shadow/good_app.log
+    expect_bad: exit
+    expect_good: exit
+    notes: "Reproduces a check that reported clean for three days without reading a single line."
+
+  - id: builtin_shadow_fixed
+    what: "Same gate with `command log`, a checked helper exit and zero lines treated as unknown."
+    protects: verification
+    cmd: [zsh, -f, "{here}/fixtures/examples/builtin-shadow/gate_fixed.zsh", "{input}"]
+    bad: fixtures/examples/builtin-shadow/bad_app.log
+    good: fixtures/examples/builtin-shadow/good_app.log
+
+  # A counter counts a status the data never contains.
+  - id: status_counter_naive
+    what: "Report open queue items; counts status pending, which the queue never uses."
+    protects: planning
+    cmd: [sh, "{here}/fixtures/examples/status-counter/report_naive.sh", "{input}"]
+    bad: fixtures/examples/status-counter/bad_queue.tsv
+    good: fixtures/examples/status-counter/good_queue.tsv
+    expect_bad: detect
+    detect_bad: '^open: [1-9][0-9]*$'
+    expect_good: detect
+    detect_good: '^open: 0$'
+    notes: "A report, so it exits 0 by design; the verdict is read from its output."
+
+  - id: status_counter_fixed
+    what: "Same report counting READY and BLOCKED, stopping on any unknown status."
+    protects: planning
+    cmd: [sh, "{here}/fixtures/examples/status-counter/report_fixed.sh", "{input}"]
+    bad: fixtures/examples/status-counter/bad_queue.tsv
+    good: fixtures/examples/status-counter/good_queue.tsv
+    expect_bad: detect
+    detect_bad: '^open: [1-9][0-9]*$'
+    expect_good: detect
+    detect_good: '^open: 0$'
+    notes: "Lands in PASS with the exit-code-lies flag: it prints open: 3 and exits 0."
+
+  # A script written for bash runs under zsh, where unquoted expansions do not split.
+  - id: word_split_naive
+    what: "Fail when a batch job has status failed; splits rows with set -- $row."
+    protects: delivery
+    cmd: [zsh, -f, "{here}/fixtures/examples/word-split/gate_naive.sh", "{input}"]
+    bad: fixtures/examples/word-split/bad_manifest.txt
+    good: fixtures/examples/word-split/good_manifest.txt
+    notes: "Same file run with bash or sh lands in PASS; the defect is the shell it runs under."
+
+  - id: word_split_fixed
+    what: "Same gate splitting with read, and treating an empty manifest as unknown."
+    protects: delivery
+    cmd: [zsh, -f, "{here}/fixtures/examples/word-split/gate_fixed.sh", "{input}"]
+    bad: fixtures/examples/word-split/bad_manifest.txt
+    good: fixtures/examples/word-split/good_manifest.txt

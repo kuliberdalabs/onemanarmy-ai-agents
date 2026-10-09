@@ -1,0 +1,15 @@
+Potwierdzenie zakupu biletu
+
+Konferencja "Mała Firma 2026"
+Organizator: Fundacja Przykładowa Wiedza
+bilety@mala-firma-konf.invalid
+
+Numer zamówienia: MF26-00318
+Data zakupu: 18.09.2026
+Bilet: Pełny dostęp, 2 dni (14-15.10.2026)
+
+Cena netto:   1.200,00 zł
+VAT 23%:        276,00 zł
+Do zapłaty:   1.476,00 zł
+
+Faktura VAT nr MF/2026/0318 zostanie wysłana osobno.
