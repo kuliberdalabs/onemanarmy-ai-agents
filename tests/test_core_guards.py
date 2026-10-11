@@ -355,10 +355,15 @@ class GateThatErrorsIsNotARejection(unittest.TestCase):
         return selftest.check_entry({**base, **entry}, self.tmp, 30)
 
     def test_awk_division_by_zero_on_the_bad_fixture_is_harness_error(self):
+        probe = subprocess.run(["awk", "BEGIN { x = 1 / 0 }"], capture_output=True, text=True)
+        if probe.returncode == 0:
+            self.skipTest("this awk (mawk) treats division by zero as infinity, not as an error")
         r = self.check()
         self.assertEqual(r["bucket"], "HARNESS-ERROR", r)
-        self.assertIn("bad fixture: exit 2 after the interpreter's own error (awk: division by zero)",
-                      r["detail"])
+        # The wording differs between awk builds (macOS: "awk: division by zero",
+        # gawk: "awk: cmd. line:1: ... fatal: division by zero attempted").
+        self.assertIn("bad fixture: exit 2 after the interpreter's own error (awk: ", r["detail"])
+        self.assertIn("division by zero", r["detail"])
 
     def test_zsh_division_by_zero_exiting_1_is_harness_error(self):
         r = self.check(cmd=["zsh", "-f", "-c",
