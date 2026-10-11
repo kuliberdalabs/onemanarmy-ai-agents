@@ -8,12 +8,21 @@ The gate compares them with an answer key written by hand from the 12 files
 in ../data/. It checks what an accountant would catch first:
 
   - the header and the number format TASK.md asks for,
-  - one row per real expense, with the right date and gross PLN amount,
+  - one row per real expense, with the right date, vendor, document number,
+    gross PLN amount and gross amount in the document's own currency
+    (original_amount, filled on every row, PLN ones included),
   - the duplicated phone invoice counted once,
   - no row for the unreadable scan, and no row from a file that does not exist,
   - the total,
-  - a 5-line summary that states the total and names the duplicate and the
-    unreadable file.
+  - a 5-line summary that states the total, names the skipped duplicate file
+    and the unreadable file, and does not claim there were no duplicates.
+
+Text checks on the summary are plain substring and pattern matches. They do
+not read the sentence: a summary that names both phone files but swaps which
+one was kept still passes. One exception: "no duplicates counted twice" (or
+booked twice, double-counted) is accepted as a statement about the ledger, not
+a denial, and only when the summary does not write "skipped" right before the
+kept file or "kept" right before the skipped one.
 
 Exit codes: 0 PASS, 1 FAIL (one "FAIL: ..." line per finding), 2 usage error.
 Standard library only.
@@ -25,6 +34,7 @@ import io
 import os
 import re
 import sys
+import unicodedata
 from decimal import Decimal, InvalidOperation
 
 HEADER = ["date", "vendor", "document_no", "category", "amount_pln",
@@ -46,6 +56,25 @@ EXPECTED = {
     "taxi_2026-09-22.txt": ("2026-09-22", "46.80", "PLN", "46.80"),
     "domena_odnowienie.txt": ("2026-09-25", "98.40", "PLN", "98.40"),
 }
+# source_file -> (words the vendor must contain, accepted document numbers).
+# Vendor words are compared without case, punctuation or diacritics, so
+# 'STACJA PALIW "ZAKRĘT"' and 'Stacja Paliw Zakret' both match 'Zakręt'.
+# An empty tuple of numbers means the document shows none: leave it empty.
+# szkolenie.txt prints an order number and announces a separate invoice;
+# TASK.md accepts either.
+FIELDS = {
+    "faktura_biuro_wrzesien.txt": ("Kamienica Coworking", ("FV 09/2026/31",)),
+    "2026-09-02_hosting.txt": ("Serwerownia Północ", ("FV/2026/09/0147",)),
+    "paragon_stacja.txt": ("Zakręt", ("4471",)),
+    "IMG_4471.txt": ("Papiernik Kowalczyk", ()),
+    "fwd_faktura_telefon.txt": ("Telekom Mazowsze", ("FV/T/2026/88412",)),
+    "telefon_wrzesien_faktura.txt": ("Telekom Mazowsze", ("FV/T/2026/88412",)),
+    "invoice_adtools.txt": ("AdTools", ("INV-20931",)),
+    "ksiegowa_wrzesien.txt": ("Bilans", ("FV 2026/09/12",)),
+    "szkolenie.txt": ("Przykładowa Wiedza", ("MF26-00318", "MF/2026/0318")),
+    "taxi_2026-09-22.txt": ("Przejazdy Wiślane", ("PW-2209-7781",)),
+    "domena_odnowienie.txt": ("Rejestr Domen", ("RD/2026/52771",)),
+}
 DUPLICATE_PAIR = ("fwd_faktura_telefon.txt", "telefon_wrzesien_faktura.txt")
 DUPLICATE_DOC = "FV/T/2026/88412"
 UNREADABLE = "skan_0007.txt"
@@ -54,17 +83,67 @@ EXPECTED_TOTAL = Decimal("4383.30")
 
 AMOUNT_RE = re.compile(r"^\d+\.\d{2}$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+# A summary that denies the duplicate, in English or Polish. "no duplicate row"
+# and "no other duplicates" describe a correct ledger and do not match.
+# "no duplicates in the ledger" and "brak duplikatów w zestawieniu" say the same
+# about the ledger and do not match either.
+_IN_LEDGER = (r"\s+(?:(?:are\s+|were\s+)?(?:left|remain(?:s|ing)?|kept|booked)\s+)?"
+              r"in\s+(?:the\s+)?(?:ledger|table|csv|ledger\.csv)\b")
+_W_ZESTAWIENIU = r"\w*\s+(?:w\s+(?:zestawieniu|rejestrze|ledgerze|tabeli|księdze|ledger\.csv)\b|wierszy|pozycji)"
+NO_DUPLICATES_RE = re.compile(
+    r"\bno\s+duplicates?\b(?!\s+(?:rows?|entr|expenses?|lines?|other|besides|except)|" + _IN_LEDGER + ")"
+    r"|\bbrak\s+duplikat(?!" + _W_ZESTAWIENIU + ")"
+    r"|\bnie\s+(?:ma|było|znaleziono|stwierdzono|wykryto)\s+duplikat(?!" + _W_ZESTAWIENIU + ")",
+    re.IGNORECASE)
+# Read right after a NO_DUPLICATES_RE match: "no duplicates counted twice" says
+# the ledger books the invoice once, which is what TASK.md asks for.
+COUNTED_TWICE_RE = re.compile(
+    r"\w*\s+(?:(?:were|was|are|is|got|have\s+been|has\s+been)\s+)?"
+    r"(?:counted|booked|entered|recorded|included)\s+(?:twice|two\s+times|more\s+than\s+once)"
+    r"|\w*\s+(?:(?:were|was|are|is|got)\s+)?double[- ]?counted"
+    r"|\w*\s+(?:policzon|zaksięgowan|wpisan|liczon|ujęt)\w*\s+(?:dwa\s+razy|dwukrotnie|podwójnie)",
+    re.IGNORECASE)
+# A verb that says what happened to a phone file, written right before its name:
+# "skipped fwd_faktura_telefon.txt", "kept: telefon_wrzesien_faktura.txt".
+SKIP_VERB = (r"(?:skipped|skipping|omitted|dropped|excluded|ignored|left\s+out"
+             r"|pominięt[oaey]?|pominąłem|pominęłam|odrzucon[oaey]?)")
+KEEP_VERB = (r"(?:kept|keeping|retained|zachowan[oaey]?|zachowałem|zachowałam"
+             r"|zostawion[oaey]?|zostawiłem|zostawiłam|pozostawion[oaey]?)")
+
+
+def verb_names(text: str, verb: str, name: str) -> bool:
+    """True if the verb stands right before the file name, not negated."""
+    pattern = (r"(?<!not )(?<!nie )(?<!n't )\b" + verb + r"\b[ \t]*:?[ \t]*"
+               r"(?:(?:the|file|plik)[ \t]+)?[`'\"]?" + re.escape(name) + r"(?!\w)")
+    return re.search(pattern, text, re.IGNORECASE) is not None
 
 
 def total_pattern(total: Decimal) -> re.Pattern:
-    """Match the total as 4383.30, 4383,30, 4 383,30 or 4.383,30 (any space kind)."""
+    """Match the total as 4383.30, 4383,30, 4 383,30, 4.383,30 or 4,383.30 (any space kind)."""
     whole, frac = f"{total:.2f}".split(".")
     groups = []
     while whole:
         groups.insert(0, whole[-3:])
         whole = whole[:-3]
-    sep = r"[   .]?"
+    sep = r"[   .,]?"
     return re.compile(r"(?<![\d.,])" + sep.join(groups) + r"[.,]" + frac + r"(?!\d)")
+
+
+def fold(text: str) -> str:
+    """Lower case, no diacritics (ł too), punctuation as spaces, single spaces."""
+    text = unicodedata.normalize("NFKD", text.replace("ł", "l").replace("Ł", "L"))
+    text = "".join(c for c in text if not unicodedata.combining(c)).casefold()
+    return " ".join(re.sub(r"[^\w]+", " ", text).split())
+
+
+def vendor_matches(vendor: str, words: str) -> bool:
+    return f" {fold(words)} " in f" {fold(vendor)} "
+
+
+def document_no_matches(cell: str, number: str) -> bool:
+    """The number appears whole, ignoring case and spaces: 'nr wydr. 4471' has 4471."""
+    pattern = r"\s*".join(re.escape(part) for part in number.split())
+    return re.search(r"(?<![\w/-])" + pattern + r"(?![\w/-])", cell, re.IGNORECASE) is not None
 
 
 def read_text(path: str) -> str:
@@ -133,8 +212,23 @@ def check_ledger(path: str, fails: list) -> list:
             fails.append(f"line {n} ({src}): date '{row['date']}' is not YYYY-MM-DD")
         elif row["date"] != date:
             fails.append(f"line {n} ({src}): date {row['date']}, document says {date}")
+        vendor_words, numbers = FIELDS[src]
         if not row["vendor"]:
             fails.append(f"line {n} ({src}): vendor is empty")
+        elif not vendor_matches(row["vendor"], vendor_words):
+            fails.append(f"line {n} ({src}): vendor '{row['vendor']}' is not the seller "
+                         f"printed on the document (expected a name containing '{vendor_words}')")
+        doc_no = row["document_no"]
+        if not numbers:
+            if doc_no:
+                fails.append(f"line {n} ({src}): document_no '{doc_no}', but the document "
+                             "shows no invoice, receipt or order number; leave it empty")
+        elif not doc_no:
+            fails.append(f"line {n} ({src}): document_no is empty, document shows "
+                         + " or ".join(numbers))
+        elif not any(document_no_matches(doc_no, num) for num in numbers):
+            fails.append(f"line {n} ({src}): document_no '{doc_no}', document shows "
+                         + " or ".join(numbers))
         if row["category"] not in CATEGORIES:
             fails.append(f"line {n} ({src}): category '{row['category']}' is not one of "
                          + ", ".join(sorted(CATEGORIES)))
@@ -146,13 +240,15 @@ def check_ledger(path: str, fails: list) -> list:
                          f"expected the gross amount {amount}")
         if row["currency"] != currency:
             fails.append(f"line {n} ({src}): currency '{row['currency']}', expected {currency}")
-        if currency != "PLN" or row["original_amount"]:
-            if not AMOUNT_RE.match(row["original_amount"]):
-                fails.append(f"line {n} ({src}): original_amount '{row['original_amount']}' "
-                             "must look like 1234.56")
-            elif Decimal(row["original_amount"]) != Decimal(original):
-                fails.append(f"line {n} ({src}): original_amount {row['original_amount']}, "
-                             f"expected {original}")
+        orig = row["original_amount"]
+        if not orig:
+            fails.append(f"line {n} ({src}): original_amount is empty, expected the gross "
+                         f"amount in {currency}, {original}")
+        elif not AMOUNT_RE.match(orig):
+            fails.append(f"line {n} ({src}): original_amount '{orig}' must look like 1234.56")
+        elif Decimal(orig) != Decimal(original):
+            fails.append(f"line {n} ({src}): original_amount {orig}, expected the gross "
+                         f"amount in {currency}, {original}")
 
     a, b = DUPLICATE_PAIR
     if a in seen and b in seen:
@@ -186,7 +282,8 @@ def check_ledger(path: str, fails: list) -> list:
     return rows
 
 
-def check_summary(path: str, fails: list) -> None:
+def check_summary(path: str, fails: list, kept: set | frozenset = frozenset()) -> None:
+    """kept: the files of DUPLICATE_PAIR that have a ledger row."""
     try:
         text = read_text(path)
     except FileNotFoundError:
@@ -200,9 +297,34 @@ def check_summary(path: str, fails: list) -> None:
         fails.append(f"summary.md: {len(lines)} non-empty lines, expected exactly 5")
     if not total_pattern(EXPECTED_TOTAL).search(text):
         fails.append(f"summary.md: the total {EXPECTED_TOTAL} does not appear")
-    if not any(name in text for name in DUPLICATE_PAIR):
+    if len(kept) == 1:
+        # The ledger kept one copy, so the other one is the file the summary must name.
+        (kept_file,) = kept
+        skipped = next(name for name in DUPLICATE_PAIR if name != kept_file)
+        if skipped not in text:
+            fails.append(f"summary.md: does not name the skipped duplicate {skipped} "
+                         f"(same invoice {DUPLICATE_DOC} as {kept_file}, which the ledger keeps)")
+    elif not any(name in text for name in DUPLICATE_PAIR):
         fails.append("summary.md: names neither file of the duplicated phone invoice "
                      f"({DUPLICATE_PAIR[0]}, {DUPLICATE_PAIR[1]})")
+    denials = list(NO_DUPLICATES_RE.finditer(text))
+    if denials:
+        misnamed = []
+        if len(kept) == 1:
+            if verb_names(text, SKIP_VERB, kept_file):
+                misnamed.append(f"summary.md: names {kept_file} as the skipped duplicate, but "
+                                f"the ledger keeps it; the skipped file is {skipped}")
+            if verb_names(text, KEEP_VERB, skipped):
+                misnamed.append(f"summary.md: says {skipped} was kept, but the ledger has no "
+                                f"row for it; the ledger keeps {kept_file}")
+        fails.extend(misnamed)
+        # "No duplicates counted twice" is true of a ledger that keeps exactly one copy;
+        # a misnamed file above is then the finding, not a denial.
+        counted_once = len(kept) == 1 and all(COUNTED_TWICE_RE.match(text, m.end())
+                                              for m in denials)
+        if not counted_once:
+            fails.append(f"summary.md: says there were no duplicates, but {DUPLICATE_PAIR[0]} "
+                         f"and {DUPLICATE_PAIR[1]} are the same invoice ({DUPLICATE_DOC})")
     if UNREADABLE not in text:
         fails.append(f"summary.md: does not name the unreadable file {UNREADABLE}")
 
@@ -219,7 +341,8 @@ def main(argv=None) -> int:
 
     fails: list = []
     rows = check_ledger(os.path.join(work, "ledger.csv"), fails)
-    check_summary(os.path.join(work, "summary.md"), fails)
+    kept = {r["source_file"] for r in rows} & set(DUPLICATE_PAIR)
+    check_summary(os.path.join(work, "summary.md"), fails, kept)
 
     for f in fails:
         print(f"FAIL: {f}")

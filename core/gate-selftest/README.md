@@ -4,20 +4,29 @@ Answers one question about each check you rely on: **can it fail at all?**
 
 Each registered gate runs twice, once on a known-bad fixture it must reject and once on a known-good fixture it must accept. Gates that pass the bad fixture land in CANNOT-FAIL. The reasoning and the incidents behind it are in [`docs/negative-controls.md`](../docs/negative-controls.md).
 
-Python 3.10+, standard library only. The example gates need `sh` and `zsh`.
+Python 3.11+, standard library only. The example gates need `sh` and `zsh`.
 
 ## Run it
 
+The runner checks itself first (the meta triangle) and exits 0 or 3:
+
 ```sh
-# The runner checks itself first (meta triangle). Exit 0 or 3.
 python3 core/gate-selftest/selftest.py --meta-only
+```
 
-# The example registry: three naive gates that cannot fail, three fixed ones. Exits 1 on purpose.
+The example registry holds three naive gates that cannot fail and three fixed ones, so it exits 1 on purpose:
+
+```sh
 python3 core/gate-selftest/selftest.py --registry core/gate-selftest/registry.example.yaml
+```
 
-# Your own gates.
+Your own gates:
+
+```sh
 python3 core/gate-selftest/selftest.py --registry path/to/registry.yaml
 ```
+
+A gate that died has not rejected anything. That run lands in HARNESS-ERROR on either fixture, with a report line naming the cause: the gate was killed by a signal, it exited 126 or 127 (a shell could not run a command), it exited 128+N where N is a signal number (a shell reporting a child killed by signal N), or it printed a Python traceback (`Traceback (most recent call last):`) on stdout or stderr. A `detect_bad` pattern that matches the crash output does not change that. In exit mode only exit 1 counts as a rejection; any other non-zero exit lands in HARNESS-ERROR as a gate that errored before it judged its input (awk, grep and diff exit 2 on trouble). A gate that rejects with another code declares it with `reject_exit`, for example `reject_exit: [1, 2]`. Even a declared code is not a rejection when the output (stderr or stdout) carries the interpreter's own error line, such as `zsh:1: division by zero`, `gate.sh: line 2: x: unbound variable` or `awk: division by zero`: that gate crashed before it judged its input. In detect mode the same lines are never a verdict: a pattern whose only match is the interpreter's own error lands in HARNESS-ERROR. The runner recognises error lines that name the shell, a script (named in `cmd` or ending in `.sh`, `.zsh`, `.bash` or `.ksh`), a zsh function with its line number, or awk. A crash that exits with the rejection code and prints none of these (a gate that discards stderr, a one-line shell function) still looks like a rejection, so use `expect_bad: detect` with a pattern for a verdict line only your gate prints, never an interpreter message, whenever a crash and a rejection can share an exit code. A gate that prints a traceback on purpose when it rejects should use detect mode, with a pattern for a verdict line it prints before the traceback (stdout is read before stderr); a match inside the traceback is not a verdict.
 
 | Flag | Value | What it does |
 | --- | --- | --- |
@@ -50,7 +59,7 @@ The runner does not modify fixtures or gates; each run gets a scratch directory 
 | `word_split_naive` | `set -- $row` under zsh, so the status field is always empty | CANNOT-FAIL |
 | `word_split_fixed` | splits with `read`, empty manifest is unknown | PASS |
 
-`word_split_naive` lands in PASS when run with `bash` or `sh`. The defect belongs to the shell the script runs under, which is why the registry names the interpreter in `cmd`. Writing `word_split_fixed` produced one more receipt: the first draft named a variable `status`, which is read-only in zsh. That draft dies on every input under zsh, and the selftest files it as FALSE-ALARM.
+`word_split_naive` lands in PASS when run with `bash` or `sh`. The defect belongs to the shell the script runs under, which is why the registry names the interpreter in `cmd`. Writing `word_split_fixed` produced one more receipt: the first draft named a variable `status`, which is read-only in zsh. That draft dies on every input under zsh. The runner of that day filed it as FALSE-ALARM; the current runner recognises zsh's own error line (`read-only variable: status`) and files it as HARNESS-ERROR.
 
 ## Registry format
 
@@ -63,7 +72,7 @@ A small YAML subset, parsed with the standard library so the tool has no depende
 
 Nested blocks, anchors, multi-line strings, unknown keys and duplicate ids are errors (exit 2). A file ending in `.json` is read as JSON with the same fields.
 
-Fields: `id`, `what`, `protects`, `cmd`, `bad`, `good`, `expect_bad`, `expect_good`, `detect_bad`, `detect_good`, `timeout`, `notes`, `no_fixture_reason`. Placeholders in `cmd`: `{input}`, `{here}`, `{root}`, `{tmp}`. Field details are in the header of [`registry.example.yaml`](registry.example.yaml).
+Fields: `id`, `what`, `protects`, `cmd`, `bad`, `good`, `expect_bad`, `expect_good`, `detect_bad`, `detect_good`, `reject_exit`, `timeout`, `notes`, `no_fixture_reason`. Placeholders in `cmd`: `{input}`, `{here}`, `{root}`, `{tmp}`. Field details are in the header of [`registry.example.yaml`](registry.example.yaml).
 
 ## Gates without a CLI
 

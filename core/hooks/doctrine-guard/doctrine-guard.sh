@@ -22,29 +22,27 @@
 #
 # Requires bash 3.2+ and python3 (stdlib only, used for JSON in and out).
 #
-# Configuration (edit the arrays below, or set environment variables):
+# Configuration (edit the array below, or set environment variables):
 #   DOCTRINE_GUARD_PROTECT  colon-separated globs; replaces the PROTECT list
-#   DOCTRINE_GUARD_ALLOW    colon-separated globs; replaces the ALLOW list
 #   DOCTRINE_GUARD_MODE     "ask" (default: the human approves or refuses)
 #                           or "deny" (always refuse; the agent must propose
 #                           the change in chat instead)
-# Globs match the absolute file path; `*` also matches `/`.
+# Globs match the absolute file path after `.` and `..` segments are
+# resolved; `*` also matches `/`.
+#
+# There is no allow list, and nothing overrides a PROTECT match. State files
+# (STATE.md, HANDOFF.md, logs, scratchpads, source code) stay editable because
+# no PROTECT glob names them. An allow list checked first is a hole: with
+# `*/scratchpad/*` on it, every AGENTS.md below any folder named scratchpad
+# went unguarded, and `*-log.md` did the same inside .claude/rules/.
+# DOCTRINE_GUARD_ALLOW is ignored; to make a file editable, leave it out of
+# DOCTRINE_GUARD_PROTECT.
 #
 # Usage:
 #   doctrine-guard.sh < hook-input.json
 #   doctrine-guard.sh --selftest     # runs allowed and blocked samples
 
 set -uo pipefail
-
-# --- ALLOW: state files. Checked first, so they win over PROTECT. ---------
-ALLOW=(
-  '*/STATE.md'
-  '*/HANDOFF.md'
-  '*/CHANGELOG.md'
-  '*/scratchpad/*'
-  '*.jsonl'
-  '*-log.md'
-)
 
 # --- PROTECT: doctrine files. Format: 'glob|why it matters' ----------------
 PROTECT=(
@@ -58,9 +56,6 @@ PROTECT=(
   '*/doctrine-guard.sh|this is the guard itself; an agent that can edit it can switch it off'
 )
 
-if [ -n "${DOCTRINE_GUARD_ALLOW:-}" ]; then
-  IFS=':' read -r -a ALLOW <<< "$DOCTRINE_GUARD_ALLOW"
-fi
 if [ -n "${DOCTRINE_GUARD_PROTECT:-}" ]; then
   IFS=':' read -r -a _globs <<< "$DOCTRINE_GUARD_PROTECT"
   PROTECT=()
@@ -78,14 +73,9 @@ decide() {
   # Relative paths get a leading slash so '*/NAME' globs still match.
   case "$path" in /*) ;; *) path="/$path" ;; esac
 
-  for glob in ${ALLOW[@]+"${ALLOW[@]}"}; do
-    # shellcheck disable=SC2254  # $glob is a pattern on purpose
-    case "$path" in $glob) return 0 ;; esac
-  done
-
   for entry in ${PROTECT[@]+"${PROTECT[@]}"}; do
     glob="${entry%%|*}"
-    # shellcheck disable=SC2254
+    # shellcheck disable=SC2254  # $glob is a pattern on purpose
     case "$path" in $glob) reason="${entry#*|}"; break ;; esac
   done
   [ -z "$reason" ] && return 0
@@ -106,16 +96,18 @@ print(json.dumps({"hookSpecificOutput": {
 ' "$path" "$reason" "$MODE"
 }
 
-# Read the hook payload and print tool_input.file_path, or nothing.
+# Read the hook payload and print tool_input.file_path with `.` and `..`
+# segments resolved (so /repo/x/../CLAUDE.md is seen as /repo/CLAUDE.md),
+# or nothing.
 extract_path() {
   python3 -c '
-import json, sys
+import json, os, sys
 try:
     data = json.load(sys.stdin)
     path = (data.get("tool_input") or {}).get("file_path") or ""
 except Exception:
     path = ""
-print(path if isinstance(path, str) else "")
+print(os.path.normpath(path) if isinstance(path, str) and path else "")
 '
 }
 
@@ -144,9 +136,20 @@ selftest() {
   run_case "harness settings"    ask   '{"tool_name":"Edit","tool_input":{"file_path":"/repo/.claude/settings.json"}}'
   run_case "the guard itself"    ask   '{"tool_name":"Edit","tool_input":{"file_path":"/repo/.claude/hooks/doctrine-guard.sh"}}'
   run_case "quote in path"       ask   '{"tool_name":"Edit","tool_input":{"file_path":"/repo/it\"s/AGENTS.md"}}'
+  # A folder named like state must not switch protection off below it.
+  run_case "scratch file"        allow '{"tool_name":"Write","tool_input":{"file_path":"/repo/scratchpad/notes.md"}}'
+  run_case "log file"            allow '{"tool_name":"Edit","tool_input":{"file_path":"/repo/notes/audit-log.md"}}'
+  run_case "AGENTS.md in scratchpad"   ask '{"tool_name":"Edit","tool_input":{"file_path":"/repo/scratchpad/AGENTS.md"}}'
+  run_case "CLAUDE.md below scratchpad" ask '{"tool_name":"Edit","tool_input":{"file_path":"/x/scratchpad/proj/CLAUDE.md"}}'
+  run_case "settings below scratchpad"  ask '{"tool_name":"Edit","tool_input":{"file_path":"/x/scratchpad/proj/.claude/settings.json"}}'
+  run_case "local settings below scratchpad" ask '{"tool_name":"Write","tool_input":{"file_path":"/x/scratchpad/proj/.claude/settings.local.json"}}'
+  run_case "rules file named like a log" ask '{"tool_name":"Write","tool_input":{"file_path":"/repo/.claude/rules/audit-log.md"}}'
+  run_case "dot-dot to CLAUDE.md"       ask '{"tool_name":"Edit","tool_input":{"file_path":"/repo/scratchpad/../CLAUDE.md"}}'
+  run_case "dot-dot to settings"        ask '{"tool_name":"Edit","tool_input":{"file_path":"/repo/.claude/hooks/../settings.json"}}'
   DOCTRINE_GUARD_MODE=deny run_case "deny mode" deny '{"tool_name":"Edit","tool_input":{"file_path":"/repo/AGENTS.md"}}'
   DOCTRINE_GUARD_PROTECT='*/POLICY.md' run_case "env list: listed"   ask   '{"tool_name":"Edit","tool_input":{"file_path":"/repo/POLICY.md"}}'
   DOCTRINE_GUARD_PROTECT='*/POLICY.md' run_case "env list: replaced" allow '{"tool_name":"Edit","tool_input":{"file_path":"/repo/AGENTS.md"}}'
+  DOCTRINE_GUARD_ALLOW='*/AGENTS.md' run_case "old allow variable ignored" ask '{"tool_name":"Edit","tool_input":{"file_path":"/repo/AGENTS.md"}}'
   if [ "$fails" -eq 0 ]; then echo "selftest: all cases passed"; return 0; fi
   echo "selftest: $fails case(s) failed"; return 1
 }

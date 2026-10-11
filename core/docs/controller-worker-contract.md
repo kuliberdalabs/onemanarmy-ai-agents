@@ -32,7 +32,7 @@ Each rule carries the failure it prevents and, where we have one, the incident t
 
 **DONE means ready for controller verification.** Acceptance is the controller's call, made on the artifact. A blocked worker returns the exact blocker and keeps any safe partial work.
 - Prevents: "done" in a worker's summary being copied into a status report unchecked.
-- Receipt: a worker's own suite reported 35 of 35 passing; the protected cases, run on the real model, showed 8 regressions out of 25.
+- Receipt: a worker's own suite reported 35 of 35 passing; the protected cases, run on the real model, showed 8 regressions out of 25. (2026-09-27; both counts are the controller's observations from the run output, and the eval ledger records the rejection, not the counts.)
 
 **Write large files per section.** A worker producing a file over roughly 400 to 600 lines writes it section by section, or one file at a time.
 - Prevents: losing the whole run to the output limit.
@@ -47,10 +47,12 @@ Each rule carries the failure it prevents and, where we have one, the incident t
 - Receipt: a worker ran `head -c` on a CLI wrapper script to see what it was. The wrapper held live tokens, and they went straight into the transcript. (2026-10-01)
 
 ```sh
-grep -c '^API_TOKEN=' .env                                 # 1 if the key is set, 0 if not
-grep -cE '^[A-Za-z_][A-Za-z0-9_]*=' .env                   # how many keys the file defines
-grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' .env | cut -d= -f1     # key names only, no values
+grep -c '^API_TOKEN=' .env
+grep -cE '^[A-Za-z_][A-Za-z0-9_]*=' .env
+grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' .env | cut -d= -f1
 ```
+
+The first line prints 1 if the key is set and 0 if not. The second counts the keys the file defines. The third prints the key names only, with no values.
 
 ## Shared trees
 

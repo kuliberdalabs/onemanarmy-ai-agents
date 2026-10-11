@@ -1,6 +1,6 @@
 # Negative controls: a check must fail once before its green counts
 
-*Updated: 2026-10-09 | scope: every gate, lint, audit or report an agent or a person relies on to say "clean" | tool: [`core/gate-selftest/`](../gate-selftest/)*
+*Updated: 2026-10-11 | scope: every gate, lint, audit or report an agent or a person relies on to say "clean" | tool: [`core/gate-selftest/`](../gate-selftest/)*
 
 A check that has only ever passed has told you nothing about whether it can fail. Before we trust a gate's "clean", we run it on an input we know is broken and require it to say so. That run is the negative control. This page explains why, shows three incidents where the missing control cost us days, and describes how to register a gate.
 
@@ -21,7 +21,7 @@ Example gate: `status_counter_naive`.
 **3. Word splitting that bash does and zsh does not.** A batch render script, written with bash habits, ran under zsh. `set -- $row` does not split an unquoted variable in zsh, so the renderer received an empty argument list. The script exited 0 after rendering zero files.
 Reproducer: [`core/pitfalls/zsh-no-wordsplit.sh`](../pitfalls/zsh-no-wordsplit.sh). Example gate: `word_split_naive`.
 
-When we first ran negative controls across our own gates, 13 had a fixture pair. One could not fail at all: the counter from incident 2, reproduced exactly. Four more detected the defect and printed it, then exited 0 anyway. Eight gates had no fixture pair, so we knew nothing about them.
+When we first ran negative controls across our own gates (2026-07-31, 21 gates), 13 had a fixture pair. Of those 13, one could not fail at all: the counter from incident 2, reproduced exactly. Four detected the defect and printed it, then exited 0 anyway. The other eight passed cleanly. The remaining eight gates had no fixture pair, so we knew nothing about them.
 
 ## Rules
 
@@ -46,7 +46,7 @@ When we first ran negative controls across our own gates, 13 had a fixture pair.
 | CANNOT-FAIL | Accepted the known-bad fixture. This is what the tool exists to find. | 1 |
 | FALSE-ALARM | Rejected the known-good fixture. | 1 |
 | NO-FIXTURE | No command or no fixture pair. Nothing is known. | 1 |
-| HARNESS-ERROR | The gate could not run: missing binary, timeout. | 1 |
+| HARNESS-ERROR | The gate could not run or died without a verdict: missing binary, timeout, killed by a signal, exit 126 or 127 (a shell could not run a command), exit 128+N (a shell reporting a child killed by signal N), a Python traceback on stdout or stderr, or in exit mode a non-zero exit that the registry does not declare as a rejection (`reject_exit`, default 1) or that follows the interpreter's own error line (`zsh:1: division by zero`); in detect mode a pattern whose only match is that line. A gate that dies has not rejected anything, even when its output matches a detect pattern; in detect mode only a match printed before the traceback counts. | 1 |
 
 PASS gates can carry an **exit code lies** flag: in detect mode, the gate printed the finding on the bad fixture and still exited 0. The detection works, and whatever called the gate never hears about it. The flag does not change the exit code, because some reports are meant to exit 0. It tells you not to chain them with `&&`.
 
@@ -78,7 +78,7 @@ One leg is not enough. A runner that files everything as CANNOT-FAIL passes the 
        good: fixtures/invoice-total/good_rounding.json
    ```
 
-   Use `expect_bad: detect` with a `detect_bad` regex when the gate reports findings in its output instead of its exit code.
+   Use `expect_bad: detect` with a `detect_bad` regex when the gate reports findings in its output instead of its exit code. Use it too when a crash and a rejection share an exit code: in exit mode, a plain non-zero exit counts as a rejection.
 4. **Run it and read the bucket.**
 
    ```sh

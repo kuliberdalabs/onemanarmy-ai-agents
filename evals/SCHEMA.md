@@ -1,6 +1,6 @@
 # Eval ledger schema
 
-Every folder under `evals/` is one dated field note: a `README.md` with the reading and a `ledger.csv` with one row per worker run. The CSV is the evidence. The prose is an interpretation of it, and a reader should be able to recompute every number in the prose from the CSV.
+Every folder under `evals/` is one dated field note: a `README.md` with the reading and a `ledger.csv` with one row per worker run. The CSV is the evidence. The prose is an interpretation of it. Every total and every table the README says is recomputed must come out of the CSV exactly. Any other number in the prose (a test count from a worker's output, an error count from the controller's check) is an observation, and the README says who made it and that no raw rows ship for it.
 
 ## Columns
 
@@ -37,7 +37,7 @@ Fields the CLI reports but the schema leaves out (reasoning tokens, command coun
 
 ## Rules
 
-**The result column holds the controller's verdict.** A worker's own test suite can be green while the real system regresses: in the first eval here a worker's fix passed 35/35 of its own tests and caused 8 regressions on 25 protected cases when run against the real model. Recording the worker's claim would have logged that as a success.
+**The result column holds the controller's verdict.** A worker's own test suite can be green while the real system regresses: in the first eval here a worker's fix passed 35/35 of its own tests and caused 8 regressions on 25 protected cases when run against the real model (the controller's observation; the ledger holds the rejection, not the counts). Recording the worker's claim would have logged that as a success.
 
 **Tokens from different CLIs are not 1:1 comparable.** Claude Code and Codex CLI do not report cached input, per-call overhead and reasoning tokens the same way, and the fixed overhead depends on what each tool loads per call (instruction files, hooks). In the Codex runs here that overhead was about 24k input tokens per call before any work started. Compare token counts between models on the same CLI and version only. Comparing totals across CLIs produces confident cost conclusions that are wrong.
 
@@ -53,7 +53,7 @@ Fields the CLI reports but the schema leaves out (reasoning tokens, command coun
 
 **The conclusion is "which worker for which task class". No leaderboards.** A ranking gets quoted without its `n`, domain and date, and then decides model choice for task classes nobody measured. Write per task class: which model, at which effort, with which controller check, and where neither should be used.
 
-**Raw rows ship beside the prose.** Totals in the README are recomputed from `ledger.csv` and the README says they were. A summary that cannot be recomputed is a claim, and this repo does not trust claims.
+**Raw rows ship beside the prose.** Totals in the README are recomputed from `ledger.csv` and the README says they were. A number that cannot be recomputed from a shipped file is labelled as an observation, with who made it. Unlabelled, it would read as measured.
 
 ## Recomputing totals
 

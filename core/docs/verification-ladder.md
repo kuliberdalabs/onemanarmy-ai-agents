@@ -16,7 +16,7 @@ The rule of thumb: run the cheapest check that can catch a realistic mistake in 
 
 Unit tests that reimplement the integration are not a level 3 check. They test your model of the boundary, and the bug usually lives in the difference between that model and the boundary.
 
-A failure at a higher level outranks any number of green checks below it. When a worker's own tests show 35 of 35 passing and the real model shows 8 regressions on 25 protected cases, the result is 8 regressions.
+A failure at a higher level outranks any number of green checks below it. When a worker's own tests show 35 of 35 passing and the real model shows 8 regressions on 25 protected cases, the result is 8 regressions. (Those counts come from a 2026-09-27 eval and are the controller's observations from the run output.)
 
 Before an irreversible step (deploy, money, a client system, deletion, anything public) there is one more gate, and it concerns authority: the action and the exact target need a still-valid approval. See [authority-model.md](authority-model.md).
 
@@ -54,7 +54,7 @@ Each row below has a reproducer in [`core/pitfalls/`](../pitfalls/). Each script
 | zsh `log` builtin | `log show ...` runs the zsh builtin, not the system binary. It prints "too many arguments" to stderr and nothing to stdout. A check that drops stderr and counts lines reports 0 lines with exit 0. | Call `/usr/bin/log` by path; give the check a positive control. | `zsh-log-builtin.sh` | zsh |
 | Pipe hides the exit code | `run_tests \| tail -n 5` returns tail's status. A test run piped into `tail` let `&& git commit` go ahead after a red test. | `run_tests >test.log 2>&1; rc=$?; tail test.log`, or `set -o pipefail`. | `pipe-swallows-exit.sh` | bash, sh |
 | `grep -q` under pipefail | Lies the other way: `producer \| grep -q x` fails when x is found, because grep exits early and the producer dies of SIGPIPE (141). Under `set -e` a server bootstrap script stopped with no message after writing its SSH config and before reloading the service. | `out=$(producer); grep -q x <<<"$out"` | `pipefail-grep-q.sh` | bash |
-| Dash-leading argument | argparse reads `-hVtq...` (an id, a hash, a base64 fragment) as `-h`, prints help and exits 0. The loop counted it as added. | Put `--` before positional arguments; count results by reading back. | `dash-arg-help.sh` | bash + python3 |
+| Dash-leading argument | argparse on Python 3.11 and newer reads `-hVtq...` (an id, a hash, a base64 fragment) as `-h`, prints help and exits 0. The loop counted it as added. Python 3.10 and older reject the same argument with exit 2. | Put `--` before positional arguments; count results by reading back. | `dash-arg-help.sh` | bash + python3 |
 | No word splitting in zsh | No exit code at all, just a wrong parse: `set -- $row` gives one argument in zsh and three in bash, and `for v in $ids` runs once. | Split explicitly (`${=row}` in zsh) or run the snippet under bash with an array. | `zsh-no-wordsplit.sh` | zsh, bash |
 | `pgrep -f` matches the waiter | A wait loop `while pgrep -f "render out.mp4"` carries the phrase in its own command line and never ends. On Linux one loop matches its own shell. macOS pgrep excludes its ancestors, so there it takes a second process with the phrase, such as a wait loop left over from a timed-out earlier wait. Nothing errors. | Use a character class: `pgrep -f "render[ ]out.mp4"`. | `pgrep-self-match.sh` | bash |
 
@@ -64,7 +64,7 @@ Run them all with:
 tests/test_pitfalls.sh
 ```
 
-The runner fails if any script reports `NOT REPRODUCED`, exits non-zero, or if it finds no scripts at all. Requirements: bash, zsh, python3 and pgrep. Verified on macOS with bash 3.2 and 5.3 and zsh 5.9 (2026-10-09).
+The runner fails if any script reports `NOT REPRODUCED`, exits non-zero, or if it finds no scripts at all. Requirements: bash, zsh, python3 3.11 or newer (for `dash-arg-help.sh`) and pgrep. Verified on macOS with bash 3.2 and 5.3 and zsh 5.9 (2026-10-09).
 
 ## Before a causal story, read the timeline
 

@@ -5,6 +5,7 @@
 //   [EA] https://docs.openclaw.ai/tools/exec-approvals
 //   [HB] https://docs.openclaw.ai/gateway/security/hardened-baseline
 //   [SB] https://docs.openclaw.ai/gateway/sandboxing/modes-scope-and-backend
+//   [AP] https://docs.openclaw.ai/tools/apply-patch (read 2026-10-11)
 // Companion command (CLI, not config; refuses to run while a Gateway is live [EA]):
 //   openclaw exec-policy preset cautious
 //   (host=gateway, security=allowlist, ask=on-miss, askFallback=deny [EA])
@@ -13,8 +14,11 @@
 // prompt for host exec [EA] but no approval gate for "message send", file delete or
 // publish done through other tools. So this tier cannot ASK before sending; it
 // denies the messaging tools instead, and the agent drafts while a person sends.
-// Deleting is only possible through exec (write/edit/apply_patch cannot delete),
-// so deletes do go through the exec allowlist and ask.
+// apply_patch deletes files with a "*** Delete File:" hunk [AP] and does not go
+// through exec, so it skips the exec approval gate (seen on OpenClaw 2026.9.6: a
+// workspace-contained apply_patch removed a file). This tier denies it, so deletes
+// go through exec, its allowlist and its ask. write and edit stay: they create and
+// change files and have no delete operation.
 {
   tools: {
     // [TP]
@@ -27,6 +31,7 @@
       "browser", // [TP] group:ui member. Logging in and submitting forms are outward actions.
       "conversations_send", // [TP] group:sessions members that talk to other conversations.
       "sessions_send",
+      "apply_patch", // [TP][AP] deletes files outside the exec gate, see above.
     ],
     // [EA] "ask" = "Use allowlist policy and ask on misses."
     exec: { mode: "ask" },

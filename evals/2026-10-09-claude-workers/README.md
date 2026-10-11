@@ -1,14 +1,14 @@
 # Claude Haiku, Sonnet, Opus and Fable as workers, with Codex, Kimi and Grok as controls
 
 > **As of:** measured 2026-10-09, one day
-> **Tools:** Claude Code 2.1.296 for all Claude runs (workers ran as subagents of one workflow in a Claude Code session, effort `high` for workers and planners). Codex CLI 0.160.0 (`codex exec`, sandbox `workspace-write`, effort `high`). Kimi CLI 2.1.1. Grok CLI 1.0.50. These versions were read with `--version` on 2026-10-10, the day after the runs; nobody logged them at run time, so an auto-update in between is possible.
+> **Tools:** Claude Code for all Claude runs, version not logged at run time: `--version` read 2.1.296 on 2026-10-10, and a hook check on 2026-10-09 ran on 2.1.295, so either could have run these evals; the ledger says `claude-code unknown (2.1.295 or 2.1.296)`. Workers ran as subagents of one workflow in a Claude Code session, effort `high` for workers and planners. Codex CLI 0.160.0 (`codex exec`, sandbox `workspace-write`, effort `high`). Kimi CLI 2.1.1. Grok CLI 1.0.50. The Codex, Kimi and Grok versions were also read with `--version` on 2026-10-10, the day after the runs; nobody logged them at run time, so an auto-update in between is possible.
 > **Models:** `claude-haiku-5-5`, `claude-sonnet-5-5`, `claude-opus-5-5`, `claude-fable-5-1`, `gpt-6.1-sol`, `kimi-code/k3`, `grok-4.7`
 > **Domain:** 8 task classes of routine agent work, all synthetic; one language pair (Polish input, Polish and English output); one day
 > **n:** 119 ledger rows. 102 graded worker runs: Haiku 38, Sonnet 16, Opus 16, Fable 7, Haiku planned by Fable 14, Codex 8, Kimi 3. Plus 14 Fable planner calls (not graded on their own) and 3 Grok attempts that never ran the model. Per task class: Haiku 5 runs on 7 classes and 3 on the eighth, Sonnet and Opus 2 each, Fable, Codex and Kimi 1 each.
 > **Confidence:** medium for Haiku on routine gated work (5 runs per class, no failure that mattered). Low for every other model (n=2 or n=1). Low for anything outside these 8 classes. Not high: one domain, one day.
 > **Unknowns:** run-to-run variance for the n=1 and n=2 models; hard tasks (every model hit the ceiling of the automated gates); the permission mode of the Claude workers; long multi-hour or browser work; other languages; token usage for 12 of 38 Haiku runs and for all Kimi runs; Grok's quality (blocked).
 
-Raw rows: [`ledger.csv`](ledger.csv) and [`judge_scores.csv`](judge_scores.csv). Column meanings: [`../SCHEMA.md`](../SCHEMA.md). Every number below is recomputed from those two files by [`recompute.py`](recompute.py), which prints the tables in this note.
+Raw rows: [`ledger.csv`](ledger.csv) and [`judge_scores.csv`](judge_scores.csv). Column meanings: [`../SCHEMA.md`](../SCHEMA.md). The tables and totals below are recomputed from those two files by [`recompute.py`](recompute.py), which prints them. A few numbers come from elsewhere and say so: the task design (corpus sizes, hidden test counts, seeded bugs), the subscription meter reading, and the CLI versions above.
 
 ## What was tested
 
@@ -80,11 +80,11 @@ For Claude rows, `input_tokens` is fresh input plus cache writes plus cache read
 | Fable 5.1 | 7 of 7 | 162 s | 1.234 USD | 97.6x |
 | Fable planner call, then Haiku worker | 14 of 14 each | 51.5 s plan, 91.5 s worker | 1.005 USD plan, 0.014 USD worker | 80.6x for plan plus worker |
 
-The last column averages per task class first, over the 7 classes every model ran, so that Haiku's uneven number of runs per class does not move it. Haiku's 12 rows without token data are all from runs 4 and 5, which have no usable usage data in the controller's usage file; wall time is also unknown for them. Wall times include contention: runs went in parallel batches on one machine.
+The last column averages per task class first, over the 7 classes every model ran, so that Haiku's uneven number of runs per class does not move it. Haiku's 12 rows without token data are all from runs 4 and 5, which mostly have no usable usage data in the controller's usage file; wall time is also unknown for them. Two run-4 rows do have usage data there and are counted as recorded, although one of them (5 s and 28 output tokens for the three-bug fix) looks misattributed. Wall times include contention: runs went in parallel batches on one machine.
 
 Codex and Kimi cannot be put in this table, and their token counts must not be compared with the Claude ones (different CLIs count cache and overhead differently, see the schema). For the record: the 8 Codex runs took 78 to 177 s (median 110 s) and used 1,558,831 input tokens, of which 331,439 uncached (32,000 to 64,000 per run), and 22,346 output tokens. The 3 Kimi runs took 196, 284 and 370 s; the CLI did not report usage.
 
-The whole Claude side moved one weekly subscription meter by roughly 4 points (11% to 15%). That is a coarse reading: other work ran in parallel. The Codex meter could not be read per run because the runs were ephemeral.
+The whole Claude side moved one weekly subscription meter by roughly 4 points (11% to 15%), a reading noted in the controller's report, with no file behind it. That is a coarse reading: other work ran in parallel. The Codex meter could not be read per run because the runs were ephemeral.
 
 ## Which worker for which task class
 

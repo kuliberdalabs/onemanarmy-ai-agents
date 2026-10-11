@@ -1,0 +1,11 @@
+date,vendor,document_no,category,amount_pln,currency,original_amount,source_file
+2026-09-01,WRONG,,rent,1230.00,PLN,1230.00,faktura_biuro_wrzesien.txt
+2026-09-02,WRONG,,software,184.50,PLN,184.50,2026-09-02_hosting.txt
+2026-09-05,WRONG,,travel,312.47,PLN,312.47,paragon_stacja.txt
+2026-09-08,WRONG,,office,87.90,PLN,87.90,IMG_4471.txt
+2026-09-10,WRONG,,phone,123.00,PLN,123.00,telefon_wrzesien_faktura.txt
+2026-09-11,WRONG,,marketing,209.23,EUR,49.00,invoice_adtools.txt
+2026-09-15,WRONG,,accounting,615.00,PLN,615.00,ksiegowa_wrzesien.txt
+2026-09-18,WRONG,,training,1476.00,PLN,1476.00,szkolenie.txt
+2026-09-22,WRONG,,travel,46.80,PLN,46.80,taxi_2026-09-22.txt
+2026-09-25,WRONG,,software,98.40,PLN,98.40,domena_odnowienie.txt

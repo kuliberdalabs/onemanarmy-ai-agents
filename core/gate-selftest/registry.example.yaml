@@ -15,9 +15,11 @@
 #                      {here} directory of this registry, {root} selftest dir,
 #                      {tmp} a scratch dir removed after the run
 #   bad / good         fixture paths, relative to this registry's directory
-#   expect_bad         exit (non-zero exit = rejected) | detect (detect_bad matches)
+#   expect_bad         exit (a reject_exit code = rejected) | detect (detect_bad matches)
 #   expect_good        exit (zero exit = accepted)     | detect (detect_good matches)
 #   detect_bad/good    regex, searched in stdout+stderr, multiline
+#   reject_exit        exit codes that mean "rejected" in exit mode, default [1];
+#                      any other non-zero exit is a HARNESS-ERROR
 #   timeout            seconds, default 60
 #   notes              what a reader should know before trusting the verdict
 #   no_fixture_reason  why the pair is missing (the gate lands in NO-FIXTURE)

@@ -2,9 +2,11 @@
 
 Run `python3 tiers/tiercheck.py` for a report, or use the functions from tests.
 Each check returns a list of violation strings; an empty list means the files
-pass. The checks read files only. They prove the tiers are well formed and get
-stricter as the number goes up. They do not prove a running agent obeys them:
-that is the job of the behavioral hold test (see README.md and hold_test.py).
+pass. The checks read files only. They prove the tiers are well formed, that the
+keys listed in COVERAGE never loosen as the number goes up, and that the pinned
+values hold. Keys outside COVERAGE are not checked. They do not prove a running
+agent obeys the files: that is the job of the behavioral hold test (see
+README.md and hold_test.py).
 """
 
 import json
@@ -72,6 +74,30 @@ CLAUDE_REQUIRED = [
 ]
 # Mode values that the permission-modes page lists for defaultMode.
 CLAUDE_MODES = {"default", "acceptEdits", "plan", "auto", "dontAsk", "bypassPermissions"}
+# Tier 1 asks before every mail command the hold-test world shims.
+CLAUDE_MAIL_ASKS = ("Bash(sendmail *)", "Bash(mail *)", "Bash(mailx *)", "Bash(msmtp *)")
+
+# What main() reports as checked. Keep it in step with the checks below.
+COVERAGE = """\
+  never looser as the tier number rises:
+    openclaw: tools.deny (groups expanded), tools.exec.mode, sandbox.mode,
+      sandbox.workspaceAccess, tools.sessions.visibility, tools.elevated.enabled,
+      tools.agentToAgent.enabled, tools.fs.workspaceOnly
+    claude-code: permissions.defaultMode, permissions.deny, tier 1 ask rules
+      asked or denied at tier 2, permissions.allow of tier 2 within tier 1
+  pinned:
+    openclaw: tier 0 exec full and sandbox off; tiers 1 and 2 tools.profile coding;
+      tier 1 sandbox.mode all and denies message and apply_patch; tier 2 exec deny,
+      denies write, edit, apply_patch, exec and message, keeps read
+    claude-code: tier 0 bypassPermissions; tiers 1 and 2 bypass mode disabled and
+      blockReadsOutsideWorkingDirectories true; tier 1 acceptEdits, no Edit, Write
+      or NotebookEdit allow rule, asks before git push, curl, rm, sendmail, mail,
+      mailx, msmtp and mcp__*, sandbox enabled with allowUnsandboxedCommands false,
+      failIfUnavailable true and network.allowedDomains empty; tier 2 dontAsk, auto
+      mode disabled, denies Edit, Write, Bash, WebFetch and mcp__*, keeps Read, Grep
+      and Glob; no allow rule shadowed by a deny or ask rule of its tier
+  not checked: any other key or allow rule, and whether a running agent obeys
+    the files (that is the hold test, hold_test.py)"""
 
 
 def _get(doc: Dict[str, Any], path: tuple) -> Any:
@@ -95,6 +121,12 @@ def load_claude(base: str = HERE) -> Dict[int, Dict[str, Any]]:
                   encoding="utf-8") as fh:
             out[t] = json.load(fh)
     return out
+
+
+def _is_string_list(value: Any) -> bool:
+    """True for a JSON array of strings. A bare string is not one: iterating it
+    would compare single letters as if they were rules."""
+    return isinstance(value, list) and all(isinstance(item, str) for item in value)
 
 
 def expand_openclaw_deny(deny: List[str]) -> Set[str]:
@@ -126,7 +158,12 @@ def check_openclaw(docs: Dict[int, Dict[str, Any]]) -> List[str]:
         if _get(doc, ("tools", "profile")) not in OPENCLAW_PROFILES:
             problems.append("openclaw tier %d: tools.profile %r is not one of %s"
                             % (t, _get(doc, ("tools", "profile")), sorted(OPENCLAW_PROFILES)))
-        for item in _get(doc, ("tools", "deny")) or []:
+        deny = _get(doc, ("tools", "deny"))
+        if deny is not None and not _is_string_list(deny):
+            problems.append("openclaw tier %d: tools.deny must be a list of strings, got %r"
+                            % (t, deny))
+            continue
+        for item in deny or []:
             if item.startswith("group:") and item not in OPENCLAW_GROUPS:
                 problems.append("openclaw tier %d: unknown tool group %s" % (t, item))
     if problems:
@@ -158,6 +195,11 @@ def check_openclaw(docs: Dict[int, Dict[str, Any]]) -> List[str]:
         ("tools.fs.workspaceOnly", ("tools", "fs", "workspaceOnly"), True),
     ):
         v = vals(path)
+        wrong = [tier for tier, x in sorted(v.items()) if x is not None and not isinstance(x, bool)]
+        for tier in wrong:
+            problems.append("%s: tier %d must be true or false, not %r" % (label, tier, v[tier]))
+        if wrong:
+            continue
         for lo, hi in ((0, 1), (1, 2)):
             if v[lo] == strict_value and v[hi] != strict_value:
                 problems.append("%s: tier %d is looser than tier %d" % (label, hi, lo))
@@ -172,8 +214,20 @@ def check_openclaw(docs: Dict[int, Dict[str, Any]]) -> List[str]:
             problems.append("openclaw tier 2 must deny %s" % must)
     if "message" not in denied[1]:
         problems.append("openclaw tier 1 must deny message (no documented ask gate)")
+    # apply_patch deletes files ("*** Delete File:") without going through exec, so
+    # it would skip the exec approval gate (https://docs.openclaw.ai/tools/apply-patch).
+    if "apply_patch" not in denied[1]:
+        problems.append("openclaw tier 1 must deny apply_patch (it deletes files outside the exec gate)")
     if "read" in denied[2]:
         problems.append("openclaw tier 2 must keep read available")
+    # Profiles are not a single order (coding and messaging hold different tools),
+    # so tiers 1 and 2 are pinned to the profile the README documents.
+    for t in (1, 2):
+        if docs[t]["tools"]["profile"] != "coding":
+            problems.append("openclaw tier %d must use tools.profile coding, not %r"
+                            % (t, docs[t]["tools"]["profile"]))
+    if docs[1]["agents"]["defaults"]["sandbox"]["mode"] != "all":
+        problems.append("openclaw tier 1 must set sandbox.mode all")
     return problems
 
 
@@ -207,8 +261,9 @@ def check_claude(docs: Dict[int, Dict[str, Any]]) -> List[str]:
             problems.append("claude tier %d: defaultMode %r is not a documented mode" % (t, mode))
         for kind in ("allow", "ask", "deny"):
             rules = _get(doc, ("permissions", kind))
-            if rules is not None and not all(isinstance(r, str) for r in rules):
-                problems.append("claude tier %d: permissions.%s must be a list of strings" % (t, kind))
+            if rules is not None and not _is_string_list(rules):
+                problems.append("claude tier %d: permissions.%s must be a list of strings, got %r"
+                                % (t, kind, rules))
     if problems:
         return problems
 
@@ -226,6 +281,12 @@ def check_claude(docs: Dict[int, Dict[str, Any]]) -> List[str]:
             if not (covered_by_deny(rule, perms[hi]["deny"]) or rule in perms[hi]["ask"]):
                 problems.append("claude: ask rule %r of tier %d is neither asked nor denied at tier %d"
                                 % (rule, lo, hi))
+
+    # Allow only shrinks from tier 1 to tier 2. Tier 0 runs bypassPermissions, where
+    # allow rules change nothing, so the 0 -> 1 pair is not compared.
+    for rule in perms[2]["allow"]:
+        if rule not in perms[1]["allow"]:
+            problems.append("claude: tier 2 allows %r, which tier 1 does not allow" % rule)
 
     # An allow rule must not be contradicted by a deny or ask rule of the same tier:
     # deny and ask win over allow, so such a rule is dead and hides a mistake.
@@ -252,12 +313,29 @@ def check_claude(docs: Dict[int, Dict[str, Any]]) -> List[str]:
     for tool in ("Read", "Grep", "Glob"):
         if tool in perms[2]["deny"]:
             problems.append("claude tier 2 must keep %s available" % tool)
-    for needed in ("Bash(git push *)", "Bash(curl *)", "Bash(rm *)", "mcp__*"):
+    # The file tools refuse reads outside the working directories, and with the
+    # sandbox on so do sandboxed commands (Claude Code 2.1.257 or later):
+    # https://code.claude.com/docs/en/settings-reference#permissions-blockreadsoutsideworkingdirectories
+    for t in (1, 2):
+        if perms[t].get("blockReadsOutsideWorkingDirectories") is not True:
+            problems.append("claude tier %d must set permissions.blockReadsOutsideWorkingDirectories to true" % t)
+    if perms[1]["defaultMode"] != "acceptEdits":
+        problems.append("claude tier 1 must use acceptEdits, not %r" % perms[1]["defaultMode"])
+    # acceptEdits already approves edits inside the working directories, so an
+    # Edit, Write or NotebookEdit allow rule at tier 1 can only reach further.
+    for rule in perms[1]["allow"]:
+        if _tool_name(rule) in ("Edit", "Write", "NotebookEdit"):
+            problems.append("claude tier 1 must not allow %r (acceptEdits covers the workspace)" % rule)
+    for needed in ("Bash(git push *)", "Bash(curl *)", "Bash(rm *)", "mcp__*", *CLAUDE_MAIL_ASKS):
         if needed not in perms[1]["ask"]:
             problems.append("claude tier 1 must ask before %s" % needed)
     sandbox = docs[1].get("sandbox", {})
     if sandbox.get("enabled") is not True or sandbox.get("allowUnsandboxedCommands") is not False:
         problems.append("claude tier 1 must enable the sandbox and disable unsandboxed retries")
+    if sandbox.get("failIfUnavailable") is not True:
+        problems.append("claude tier 1 must set sandbox.failIfUnavailable to true, or commands run unsandboxed")
+    if _get(docs[1], ("sandbox", "network", "allowedDomains")) != []:
+        problems.append("claude tier 1 must set sandbox.network.allowedDomains to an empty list")
     return problems
 
 
@@ -268,7 +346,8 @@ def main() -> int:
         for p in problems:
             print("  -", p)
         return 1
-    print("tier check ok: openclaw and claude-code tiers parse and get stricter with the tier number")
+    print("tier check ok: openclaw and claude-code tiers parse and pass these checks")
+    print(COVERAGE)
     return 0
 
 

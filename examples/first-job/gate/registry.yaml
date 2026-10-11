@@ -34,3 +34,36 @@ instruments:
     detect_bad: '^FAIL: guessed row: .*skan_0007\.txt'
     expect_good: exit
     notes: "The summary even admits the guess; only the ledger row decides what the accountant books."
+
+  - id: first_job_vendor
+    what: "Reject a ledger whose vendor column does not name the seller printed on each document."
+    protects: money
+    cmd: [python3, "{here}/check_ledger.py", "{input}"]
+    bad: fixtures/bad-fields
+    good: fixtures/good
+    expect_bad: detect
+    detect_bad: '^FAIL: line \d+ \(faktura_biuro_wrzesien\.txt\): vendor .*Kamienica Coworking'
+    expect_good: exit
+    notes: "Dates, amounts and the total are all right; only the vendor and document_no columns are wrong."
+
+  - id: first_job_document_no
+    what: "Reject a ledger that leaves document_no empty where the document prints an invoice, receipt or order number."
+    protects: money
+    cmd: [python3, "{here}/check_ledger.py", "{input}"]
+    bad: fixtures/bad-fields
+    good: fixtures/good
+    expect_bad: detect
+    detect_bad: '^FAIL: line \d+ \(faktura_biuro_wrzesien\.txt\): document_no is empty, document shows FV 09/2026/31'
+    expect_good: exit
+    notes: "Same fixture as first_job_vendor; this entry proves the document_no check fails on its own line."
+
+  - id: first_job_summary_duplicate
+    what: "Reject a summary that says there were no duplicates and never names the skipped phone file."
+    protects: money
+    cmd: [python3, "{here}/check_ledger.py", "{input}"]
+    bad: fixtures/bad-summary
+    good: fixtures/good
+    expect_bad: detect
+    detect_bad: '^FAIL: summary\.md: does not name the skipped duplicate fwd_faktura_telefon\.txt'
+    expect_good: exit
+    notes: "The ledger is the reference one; only the owner-facing summary hides the duplicate."

@@ -218,7 +218,9 @@ class SelftestRegistry(unittest.TestCase):
                 results = json.load(fh)["results"]
         self.assertEqual(code, 0, buf.getvalue())
         self.assertEqual({r["id"]: r["bucket"] for r in results},
-                         {"first_job_duplicate": "PASS", "first_job_guessed": "PASS"})
+                         {"first_job_duplicate": "PASS", "first_job_guessed": "PASS",
+                          "first_job_vendor": "PASS", "first_job_document_no": "PASS",
+                          "first_job_summary_duplicate": "PASS"})
 
     def test_registry_catches_a_gate_that_cannot_fail(self):
         """Swap the real gate for one that always passes: the registry must say CANNOT-FAIL."""
@@ -232,7 +234,7 @@ class SelftestRegistry(unittest.TestCase):
             with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
                 code = selftest.main(["--registry", os.path.join(tmp, "registry.yaml")])
         self.assertEqual(code, 1, buf.getvalue())
-        self.assertIn("CANNOT-FAIL: 2", buf.getvalue())
+        self.assertIn("CANNOT-FAIL: 5", buf.getvalue())
 
 
 if __name__ == "__main__":

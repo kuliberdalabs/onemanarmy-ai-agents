@@ -2,6 +2,7 @@
   "permissions": {
     "defaultMode": "acceptEdits",
     "disableBypassPermissionsMode": "disable",
+    "blockReadsOutsideWorkingDirectories": true,
     "allow": [
       "Read",
       "Grep",
@@ -26,6 +27,8 @@
       "Bash(rsync *)",
       "Bash(sendmail *)",
       "Bash(mail *)",
+      "Bash(mailx *)",
+      "Bash(msmtp *)",
       "Bash(npm publish *)",
       "Bash(rm *)",
       "Bash(rmdir *)",
@@ -40,7 +43,8 @@
     "deny": [
       "Bash(sudo *)",
       "Read(~/.ssh/**)",
-      "Read(//**/.env)"
+      "Read(//**/.env)",
+      "Read(//**/.env.*)"
     ]
   },
   "sandbox": {

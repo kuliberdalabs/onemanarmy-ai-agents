@@ -5,13 +5,19 @@
 # exit 0 as success counts an item that was never processed. Measured once:
 # a batch reported 8 items added; the target held 7.
 #
-# Needs: bash and python3 (stdlib argparse).
+# Needs: bash and python3 3.11 or newer (stdlib argparse). Up to 3.10,
+# argparse rejects "-hVtq..." with "ignored explicit argument" and exit 2, so
+# the item fails loudly there and this pitfall does not show.
 # Fix: put `--` before positional arguments, and after any API operation count
 # the objects by reading them back instead of trusting exit codes.
 # Prints REPRODUCED and exits 0 when the pitfall shows; exits 1 otherwise.
 
 if ! command -v python3 >/dev/null 2>&1; then
   echo "NOT REPRODUCED: python3 not installed"; exit 1
+fi
+if ! python3 -I -c 'import sys; sys.exit(sys.version_info < (3, 11))' 2>/dev/null; then
+  found=$(python3 -I -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null)
+  echo "NOT REPRODUCED: needs python3 >= 3.11 (found ${found:-unknown})"; exit 1
 fi
 
 cli='

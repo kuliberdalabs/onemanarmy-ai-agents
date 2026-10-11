@@ -85,7 +85,7 @@ Look at the actual artifact and check it is fresh. Confirm the protected accepta
 
 Worker prose and worker-written green tests are inputs to acceptance. They are never the acceptance itself.
 
-**Receipt:** a worker's own suite reported 35 of 35 passing. Run against the real model, the same change showed 8 regressions on 25 protected cases.
+**Receipt:** a worker's own suite reported 35 of 35 passing. Run against the real model, the same change showed 8 regressions on 25 protected cases. Both counts are the controller's observations from the run output (2026-09-27); the eval ledger records the rejection, not the counts.
 
 When a claim is assembled from several live sources, a partial read is reported as incomplete, never as a full report. Two of three sources read is a report that says "incomplete: 2 of 3", with the missing source named.
 

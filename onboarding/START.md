@@ -50,7 +50,7 @@ After an explicit accept, follow the writing steps in `synthesize-profile.md`: a
 python3 onboarding/check_placeholders.py <context folder>
 ```
 
-The check must report no unfilled placeholders. Fix what it lists and run it again. Do not tell the owner the profile is saved until it passes.
+The check must report no unfilled placeholders and exit 0. Fix what it lists and run it again. Exit 2 means it could not read every file: a file it cannot open or one that is not UTF-8 text is named on stderr, and you re-save or fix that file before you run it again. Do not tell the owner the profile is saved until it passes.
 
 ## 6. Handing back
 

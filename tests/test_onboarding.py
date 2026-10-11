@@ -68,18 +68,18 @@ class TempDirCase(unittest.TestCase):
 class CheckerTests(TempDirCase):
     def test_reports_name_line_and_file(self):
         path = self.write("a.md", "first\nName: {{OWNER_NAME}}\nthird\n")
-        findings, scanned, _ = cp.scan([self.tmp])
+        findings, scanned, _, _ = cp.scan([self.tmp])
         self.assertEqual(findings, [(path, 2, "OWNER_NAME")])
         self.assertEqual(scanned, 1)
 
     def test_every_occurrence_on_a_line_is_reported(self):
         self.write("a.md", "{{A}} and {{B}} and {{A}}\n")
-        findings, _, _ = cp.scan([self.tmp])
+        findings, _, _, _ = cp.scan([self.tmp])
         self.assertEqual([n for _, _, n in findings], ["A", "B", "A"])
 
     def test_spaces_inside_braces_still_count(self):
         self.write("a.md", "x {{ SPACED_NAME }} y\n")
-        findings, _, _ = cp.scan([self.tmp])
+        findings, _, _, _ = cp.scan([self.tmp])
         self.assertEqual([n for _, _, n in findings], ["SPACED_NAME"])
 
     def test_clean_folder_exits_zero(self):
@@ -125,13 +125,16 @@ class CheckerTests(TempDirCase):
         code, out, _ = run_main(self.tmp)
         self.assertEqual(code, 0, out)
 
-    def test_binary_and_non_utf8_files_are_skipped_and_counted(self):
+    def test_binary_files_are_skipped_and_non_utf8_files_fail(self):
         self.write("a.md", "clean\n")
         self.write("img.bin", b"\x00\x01{{BIN}}\x02", mode="wb")
-        self.write("latin.txt", b"caf\xe9 {{LATIN}}", mode="wb")
         code, out, _ = run_main(self.tmp)
         self.assertEqual(code, 0, out)
-        self.assertIn("2 binary skipped", out)
+        self.assertIn("1 binary skipped", out)
+        self.write("latin.txt", b"caf\xe9 {{LATIN}}", mode="wb")
+        code, out, err = run_main(self.tmp)
+        self.assertEqual(code, 2, out)
+        self.assertIn("latin.txt is not UTF-8 text", err)
 
     def test_single_file_path_works(self):
         path = self.write("a.md", "{{ONE}}\n")

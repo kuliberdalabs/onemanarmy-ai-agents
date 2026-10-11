@@ -19,15 +19,26 @@ WHY
 WHAT IT DOES
   For every gate in the registry the runner:
     a) runs it on a KNOWN-BAD fixture and demands a rejection
-       (non-zero exit, or a match of `detect_bad` in stdout/stderr),
+       (a `reject_exit` code, default 1, or a match of `detect_bad`),
     b) runs it on a KNOWN-GOOD fixture and demands acceptance.
+  A gate that died gave no verdict on that fixture: killed by a signal,
+  exit 126 or 127 (a shell could not run a command), exit 128+N where N is a
+  signal number (a shell reporting a child killed by signal N), or a Python
+  traceback on stdout or stderr. Its exit code is not a rejection, so that run
+  lands in HARNESS-ERROR on either side of the pair. In exit mode only the
+  codes in `reject_exit` (default 1) count as a rejection, and not even those
+  when stderr carries the interpreter's own error line (zsh:1: division by
+  zero); any other non-zero exit is a HARNESS-ERROR. In detect mode a traceback keeps
+  the verdict only when the pattern matches output printed before it.
 
   Buckets
     PASS           rejects the bad fixture and accepts the good one.
     CANNOT-FAIL    accepted the bad fixture. This is the finding.
     FALSE-ALARM    rejected the good fixture. People learn to ignore it.
     NO-FIXTURE     no command or no fixture pair, so nothing is known.
-    HARNESS-ERROR  the gate could not be run (timeout, missing binary).
+    HARNESS-ERROR  the gate could not be run (timeout, missing binary), or
+                   died without a verdict (killed by a signal, exit 126,
+                   127 or 128+N, a Python traceback).
 
   A PASS gate in detect mode that printed the finding on the bad fixture and
   still exited 0 is flagged "exit code lies": anything that calls it with
@@ -66,6 +77,7 @@ import json
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
@@ -86,8 +98,13 @@ EXIT_OK, EXIT_FINDINGS, EXIT_USAGE, EXIT_RUNNER_BROKEN = 0, 1, 2, 3
 
 KNOWN_KEYS = {
     "id", "what", "protects", "cmd", "bad", "good", "expect_bad", "expect_good",
-    "detect_bad", "detect_good", "timeout", "notes", "no_fixture_reason",
+    "detect_bad", "detect_good", "timeout", "notes", "no_fixture_reason", "reject_exit",
 }
+
+# In exit mode only these exit codes count as a rejection unless the registry
+# entry declares its own with `reject_exit`. Any other non-zero exit is a gate
+# that errored (awk, grep and diff use 2 for "trouble"), not a verdict.
+DEFAULT_REJECT_EXIT = (1,)
 
 
 class RegistryError(Exception):
@@ -273,7 +290,19 @@ def load_registry(path: str) -> list:
             raise RegistryError(f"{name}: entry {e['id']!r} has unknown keys: {sorted(unknown)}")
         if "cmd" in e and not (isinstance(e["cmd"], list) and all(isinstance(a, str) for a in e["cmd"])):
             raise RegistryError(f"{name}: entry {e['id']!r}: `cmd` must be a list of strings")
+        if "reject_exit" in e:
+            codes = e["reject_exit"] if isinstance(e["reject_exit"], list) else [e["reject_exit"]]
+            if not codes or not all(isinstance(c, int) and not isinstance(c, bool) and 1 <= c <= 255
+                                    for c in codes):
+                raise RegistryError(f"{name}: entry {e['id']!r}: `reject_exit` must be an exit "
+                                    "code from 1 to 255 or a list of them")
     return entries
+
+
+def reject_codes(entry) -> tuple:
+    """The exit codes that count as a rejection in exit mode for this entry."""
+    codes = entry.get("reject_exit", DEFAULT_REJECT_EXIT)
+    return tuple(codes) if isinstance(codes, (list, tuple)) else (codes,)
 
 
 # ----------------------------------------------------------------- engine --
@@ -285,19 +314,141 @@ def subst(arg: str, mapping: dict) -> str:
 
 
 def run_once(cmd, workdir, timeout):
-    """Run one command. Returns (rc, combined_output, harness_error_or_None)."""
+    """Run one command.
+
+    Returns (rc, stdout, stderr, harness_error_or_None).
+    """
     try:
         p = subprocess.run(
             cmd, cwd=workdir, capture_output=True, text=True, timeout=timeout,
             stdin=subprocess.DEVNULL, env={**os.environ, "PYTHONIOENCODING": "utf-8"},
         )
-        return p.returncode, (p.stdout or "") + (p.stderr or ""), None
+        return p.returncode, p.stdout or "", p.stderr or "", None
     except subprocess.TimeoutExpired:
-        return None, "", f"timeout after {timeout}s"
+        return None, "", "", f"timeout after {timeout}s"
     except FileNotFoundError as exc:
-        return None, "", f"missing binary: {exc.filename or exc}"
+        return None, "", "", f"missing binary: {exc.filename or exc}"
     except OSError as exc:
-        return None, "", f"OSError: {exc}"
+        return None, "", "", f"OSError: {exc}"
+
+
+_TRACEBACK = re.compile(r"^\s*(?:\+ )?(?:Exception Group )?Traceback \(most recent call last\):$",
+                        re.MULTILINE)
+
+# Exit codes a shell reports when it could not run a command at all.
+_SHELL_COULD_NOT_RUN = {
+    126: "a shell found a command it could not execute",
+    127: "a shell could not find a command",
+}
+
+
+def _signal_name(number):
+    try:
+        return signal.Signals(number).name
+    except ValueError:
+        return None
+
+
+def _exception_line(text):
+    """The exception line that ends the last traceback in text, or ''."""
+    header = None
+    for header in _TRACEBACK.finditer(text):
+        pass
+    if header is None:
+        return ""
+    for line in text[header.end():].splitlines():
+        if line.strip() and not line[:1].isspace():
+            return line.strip()
+    return ""
+
+
+def before_traceback(stdout, stderr):
+    """Everything the gate printed before its first traceback, stdout first."""
+    m = _TRACEBACK.search(stdout)
+    if m:
+        return stdout[:m.start()]
+    m = _TRACEBACK.search(stderr)
+    return stdout + "\n" + (stderr[:m.start()] if m else stderr)
+
+
+def interpreter_error(cmd, stdout, stderr, input_path=None, strip=False):
+    """The first line written by the gate's own interpreter, or None.
+
+    zsh, bash, sh and awk report a runtime error (division by zero, an unbound
+    variable, a bad substitution) as "<name>:<line>: ...", "<name>: line <n>: ..."
+    (the word "line" is translated in other locales), "<name>: <n>: ..." or
+    "awk: ...", where <name> is the shell, a script it runs (named in cmd or with
+    a shell extension), or a zsh function, with or without its folder. A gate that prints one of those crashed before it judged its
+    input, even when the exit code is the one it uses for a rejection. The input
+    file is left out of the names, so a gate that reports "<input>:3: problem"
+    keeps its verdict. Both streams are read, because a gate can send its
+    stderr to stdout (exec 2>&1), and a script path may contain spaces.
+    With strip=True it returns the output without those lines instead, so that a
+    detect pattern cannot take the interpreter's own error for a verdict.
+    """
+    names = set()
+    for arg in cmd:
+        if arg.startswith("-") or not arg or "\n" in arg or arg == input_path:
+            continue
+        if any(c.isspace() for c in arg) and not os.path.exists(arg):
+            continue  # an inline script such as zsh -c '...', not a file name
+        names.add(os.path.basename(arg))
+    names.update(("zsh", "bash", "sh", "dash", "ksh"))
+    alts = "|".join(re.escape(n) for n in sorted(names, key=len, reverse=True))
+    shape = re.compile(
+        r"^(?:.*/)?(?:%s)(?::\d+:|:(?: \S+)? \d+:)\s"   # the shell or a script named in cmd
+        r"|^(?:\S*/)?[gmn]?awk: "                           # awk
+        r"|^(?:.*/)?[^\s/:]+\.(?:sh|zsh|bash|ksh)(?::\d+:|:(?: \S+)? \d+:)\s"  # a helper script
+        r"|^[A-Za-z_][A-Za-z0-9_]*:\d+:\s" % alts          # a zsh function: "name:line: ..."
+    )
+    if strip:
+        return "\n".join(line for line in (stdout + stderr).splitlines() if not shape.match(line))
+    for line in (stderr + "\n" + stdout).splitlines():
+        if shape.match(line):
+            head, sep, rest = line.strip().partition(": ")
+            # Drop the folder of the script name so the message fits the report.
+            return (os.path.basename(head) + sep + rest) if "/" in head else line.strip()
+    return None
+
+
+def died_without_verdict(rc, stdout, stderr, detect_pattern=None):
+    """Why a run ended without a verdict, or None when the gate judged its input.
+
+    A gate killed by a signal, one whose shell could not run a command, and one
+    that printed a Python traceback did not judge its input. Counting its
+    non-zero exit as a rejection, or letting a broad detect pattern match its
+    traceback, would file a broken gate as PASS. Recognised shapes: a negative
+    return code (the gate itself was killed), exit 126 or 127, exit 128+N where
+    N is a signal number (a shell reporting a child killed by signal N), and a
+    "Traceback (most recent call last):" line on stdout or stderr. Any other
+    exit code, a plain `exit 1` included, stays a verdict.
+
+    detect_pattern is the side's pattern in detect mode. A gate that prints a
+    traceback on purpose keeps its verdict when that pattern matches what it
+    printed before the first traceback; a match inside the traceback is not a
+    verdict.
+    """
+    if rc is not None and rc < 0:
+        name = _signal_name(-rc) or "unknown signal"
+        return f"killed by signal {-rc} ({name}); a gate that dies has not rejected anything"
+    if rc in _SHELL_COULD_NOT_RUN:
+        return (f"exit {rc}: {_SHELL_COULD_NOT_RUN[rc]}; a gate that could not run "
+                "has not rejected anything")
+    if rc is not None and rc > 128 and _signal_name(rc - 128):
+        n = rc - 128
+        return (f"exit {rc} = 128+{n}: a shell reported a child killed by signal {n} "
+                f"({_signal_name(n)}); a gate that dies has not rejected anything")
+    streams = [name for name, text in (("stdout", stdout), ("stderr", stderr))
+               if _TRACEBACK.search(text)]
+    if not streams:
+        return None
+    if detect_pattern and re.search(detect_pattern, before_traceback(stdout, stderr),
+                                    re.MULTILINE):
+        return None
+    last = _exception_line(stderr if "stderr" in streams else stdout)
+    what = "crashed with an unhandled exception" if rc else "printed a Python traceback"
+    facts = f"exit={rc}, {last[:160]}" if last else f"exit={rc}"
+    return f"{what} ({facts}), traceback on {' and '.join(streams)}; a crash is not a verdict"
 
 
 def judge(rc, out, mode, pattern, want_fail):
@@ -360,12 +511,50 @@ def check_entry(entry, base_dir, timeout_default):
             ("good", good, mode_good, pat_good, False),
         ):
             cmd = [subst(a, {**common, "input": path}) for a in entry["cmd"]]
-            rc, out, err = run_once(cmd, workdir, timeout)
+            rc, stdout, stderr, err = run_once(cmd, workdir, timeout)
             if err:
                 res["bucket"] = HARNESS_ERROR
                 res["detail"] = f"{side} fixture: {err}"
                 res[f"{side}_evidence"] = err
                 return res
+            out = stdout + stderr
+            died = died_without_verdict(rc, stdout, stderr, pat if mode == "detect" else None)
+            if died:
+                res["bucket"] = HARNESS_ERROR
+                res["detail"] = f"{side} fixture: {died}"
+                res[f"{side}_evidence"] = f"exit={rc}"
+                res[f"{side}_tail"] = out.strip().splitlines()[-3:]
+                return res
+            codes = reject_codes(entry)
+            crash_line = interpreter_error(cmd, stdout, stderr, path) if mode == "exit" and rc else None
+            if crash_line:
+                res["bucket"] = HARNESS_ERROR
+                res["detail"] = (f"{side} fixture: exit {rc} after the interpreter's own error "
+                                 f"({crash_line[:160]}); a gate that crashed has not judged its "
+                                 "input. If that output is a real rejection, use expect_bad: detect "
+                                 "with a pattern for the verdict line")
+                res[f"{side}_evidence"] = f"exit={rc}"
+                res[f"{side}_tail"] = out.strip().splitlines()[-3:]
+                return res
+            if mode == "exit" and rc not in (0, *codes):
+                res["bucket"] = HARNESS_ERROR
+                res["detail"] = (f"{side} fixture: exit {rc} is not a declared rejection code "
+                                 f"(reject_exit: {list(codes)}); a gate that errors has not "
+                                 "judged its input")
+                res[f"{side}_evidence"] = f"exit={rc}"
+                res[f"{side}_tail"] = out.strip().splitlines()[-3:]
+                return res
+            if mode == "detect" and pat and re.search(pat, out, re.MULTILINE):
+                rest = interpreter_error(cmd, stdout, stderr, path, strip=True)
+                if not re.search(pat, rest, re.MULTILINE):
+                    line = interpreter_error(cmd, stdout, stderr, path)
+                    res["bucket"] = HARNESS_ERROR
+                    res["detail"] = (f"{side} fixture: the only match for /{pat}/ is the "
+                                     f"interpreter's own error ({(line or '')[:160]}); a gate that "
+                                     "crashed has not judged its input")
+                    res[f"{side}_evidence"] = f"exit={rc}"
+                    res[f"{side}_tail"] = out.strip().splitlines()[-3:]
+                    return res
             ok, evidence = judge(rc, out, mode, pat, want_fail)
             res[f"{side}_evidence"] = evidence
             res[f"{side}_tail"] = out.strip().splitlines()[-3:]

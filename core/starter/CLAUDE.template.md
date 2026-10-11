@@ -7,7 +7,7 @@
 
 # Claude Code layer
 
-- Hooks: {{HOOKS_IN_USE}} (for example `core/hooks/doctrine-guard`, which blocks Edit/Write on
-  rule files; it does not see shell redirects).
+- Hooks: {{HOOKS_IN_USE}}. (doctrine-guard, if listed, sends Edit, Write and MultiEdit on rule
+  files to the human for a yes or no; it does not see shell writes such as redirects.)
 - Subagents: {{WHEN_TO_USE_SUBAGENTS}}. Their output is a claim; verify it on the artifact.
 - After `/compact`, re-read `{{STATE_FILE}}` and the last written approval line before acting.

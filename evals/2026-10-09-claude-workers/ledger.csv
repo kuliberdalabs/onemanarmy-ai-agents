@@ -1,109 +1,109 @@
 date,task,model_id,effort,cli,sandbox,wall_s,input_tokens,cached_input_tokens,output_tokens,result,controller_corrections,accepted_unchanged,run_id,score
-2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code 2.1.296,unknown,140,637176,516346,794,accepted,0,yes,haiku-r1,0.9806
-2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code 2.1.296,unknown,138,924431,859091,4683,accepted,0,yes,haiku-r1,1
-2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code 2.1.296,unknown,69,850699,770024,356,accepted,0,yes,haiku-r1,1
-2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code 2.1.296,unknown,70,493657,423398,157,accepted,0,yes,haiku-r1,0.9828
-2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code 2.1.296,unknown,66,358402,309914,593,accepted,0,yes,haiku-r1,1
-2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code 2.1.296,unknown,110,629975,567291,946,accepted,0,yes,haiku-r1,1
-2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code 2.1.296,unknown,153,461698,403900,464,accepted,0,yes,haiku-r1,1
-2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code 2.1.296,unknown,148,695262,592887,328,accepted,0,yes,haiku-r2,0.9871
-2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code 2.1.296,unknown,67,523184,465745,537,accepted,0,yes,haiku-r2,1
-2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code 2.1.296,unknown,57,651554,568182,530,accepted,0,yes,haiku-r2,1
-2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code 2.1.296,unknown,89,566516,493043,445,accepted,0,yes,haiku-r2,1
-2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code 2.1.296,unknown,40,361008,311502,600,accepted,0,yes,haiku-r2,1
-2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code 2.1.296,unknown,68,363406,311497,589,accepted,0,yes,haiku-r2,1
-2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code 2.1.296,unknown,147,377835,329744,398,accepted,0,yes,haiku-r2,1
-2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code 2.1.296,unknown,18,301052,244657,56,accepted,0,yes,haiku-r3,0.9871
-2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code 2.1.296,unknown,36,162874,121663,24,accepted,0,yes,haiku-r3,1
-2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code 2.1.296,unknown,57,953062,859771,86,accepted,0,yes,haiku-r3,1
-2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code 2.1.296,unknown,68,440464,373331,70,accepted,0,yes,haiku-r3,1
-2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code 2.1.296,unknown,45,358130,309609,250,accepted,0,yes,haiku-r3,1
-2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code 2.1.296,unknown,66,435495,384101,353,accepted,0,yes,haiku-r3,1
-2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code 2.1.296,unknown,66,421896,367601,75,accepted,0,yes,haiku-r3,1
-2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code 2.1.296,unknown,20,416787,357648,153,accepted,0,yes,haiku-r4,0.9871
-2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code 2.1.296,unknown,5,102814,67009,28,accepted,0,yes,haiku-r4,1
-2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
-2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
-2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
-2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
-2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
-2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,0.9806
-2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
-2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
-2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
-2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
-2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
-2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code 2.1.296,unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
-2026-10-09,diagnose-open/duplicate-mails-open,claude-haiku-5-5,high,claude-code 2.1.296,unknown,21,330195,264062,38,accepted,0,yes,do-haiku-r1,1
-2026-10-09,diagnose-open/duplicate-mails-open,claude-haiku-5-5,high,claude-code 2.1.296,unknown,23,448918,385722,65,accepted,0,yes,do-haiku-r2,1
-2026-10-09,diagnose-open/duplicate-mails-open,claude-haiku-5-5,high,claude-code 2.1.296,unknown,26,493442,439162,87,accepted,0,yes,do-haiku-r3,0.4
-2026-10-09,classify/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,54,414293,346639,935,accepted,0,yes,fhaiku-r1,n/a
-2026-10-09,classify/email-155+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,165,417436,332500,38,accepted,0,yes,fhaiku-r1,0.9806
-2026-10-09,fix/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,47,283681,239760,2824,accepted,0,yes,fhaiku-r1,n/a
-2026-10-09,fix/invoice-package+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,127,765004,707310,462,accepted,0,yes,fhaiku-r1,1
-2026-10-09,diagnose/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,56,508681,450057,1338,accepted,0,yes,fhaiku-r1,n/a
-2026-10-09,diagnose/duplicate-mails+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,58,547343,479184,448,accepted,0,yes,fhaiku-r1,1
-2026-10-09,sweep/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,51,302128,248450,3235,accepted,0,yes,fhaiku-r1,n/a
-2026-10-09,sweep/leak-scan-45-files+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,76,516115,441450,1157,accepted,0,yes,fhaiku-r1,1
-2026-10-09,generalize/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,46,277187,235254,1009,accepted,0,yes,fhaiku-r1,n/a
-2026-10-09,generalize/skill-to-public+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,51,305848,253181,40,accepted,0,yes,fhaiku-r1,1
-2026-10-09,write-pl/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,129,216125,177306,1262,accepted,0,yes,fhaiku-r1,n/a
-2026-10-09,write-pl/linkedin-post+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,84,326761,268956,419,accepted,0,yes,fhaiku-r1,1
-2026-10-09,build/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,56,341816,298408,2564,accepted,0,yes,fhaiku-r1,n/a
-2026-10-09,build/contact-merge-cli+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,114,957100,890589,686,accepted,0,yes,fhaiku-r1,1
-2026-10-09,classify/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,61,442240,378252,2318,accepted,0,yes,fhaiku-r2,n/a
-2026-10-09,classify/email-155+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,249,746439,670568,1384,accepted,0,yes,fhaiku-r2,1
-2026-10-09,fix/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,58,290701,245714,836,accepted,0,yes,fhaiku-r2,n/a
-2026-10-09,fix/invoice-package+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,99,635770,571911,318,accepted,0,yes,fhaiku-r2,1
-2026-10-09,diagnose/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,50,548543,478993,1213,accepted,0,yes,fhaiku-r2,n/a
-2026-10-09,diagnose/duplicate-mails+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,44,697228,632569,401,accepted,0,yes,fhaiku-r2,1
-2026-10-09,sweep/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,46,358211,306554,2000,accepted,0,yes,fhaiku-r2,n/a
-2026-10-09,sweep/leak-scan-45-files+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,124,1738675,1655527,636,accepted,0,yes,fhaiku-r2,1
-2026-10-09,generalize/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,40,219629,179569,2233,accepted,0,yes,fhaiku-r2,n/a
-2026-10-09,generalize/skill-to-public+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,62,315707,259864,347,accepted,0,yes,fhaiku-r2,1
-2026-10-09,write-pl/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,28,270865,232790,1057,accepted,0,yes,fhaiku-r2,n/a
-2026-10-09,write-pl/linkedin-post+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,49,365638,316852,281,accepted,0,yes,fhaiku-r2,1
-2026-10-09,build/fable-plan-for-haiku,claude-fable-5-1,high,claude-code 2.1.296,unknown,52,280385,238009,2847,accepted,0,yes,fhaiku-r2,n/a
-2026-10-09,build/contact-merge-cli+fable-plan,claude-haiku-5-5,high,claude-code 2.1.296,unknown,158,633315,568067,356,accepted,0,yes,fhaiku-r2,1
-2026-10-09,classify/email-155,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,76,481047,386570,149,accepted,0,yes,sonnet-r1,1
-2026-10-09,fix/invoice-package,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,50,350795,303453,681,accepted,0,yes,sonnet-r1,1
-2026-10-09,diagnose/duplicate-mails,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,30,501283,436146,287,accepted,0,yes,sonnet-r1,1
-2026-10-09,sweep/leak-scan-45-files,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,38,375255,314606,193,accepted,0,yes,sonnet-r1,1
-2026-10-09,generalize/skill-to-public,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,42,225544,179878,220,accepted,0,yes,sonnet-r1,1
-2026-10-09,write-pl/linkedin-post,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,66,581633,537508,192,accepted,0,yes,sonnet-r1,1
-2026-10-09,build/contact-merge-cli,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,37,280601,237540,401,accepted,0,yes,sonnet-r1,1
-2026-10-09,classify/email-155,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,85,482808,405939,292,accepted,0,yes,sonnet-r2,1
-2026-10-09,fix/invoice-package,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,47,350941,303572,820,accepted,0,yes,sonnet-r2,1
-2026-10-09,diagnose/duplicate-mails,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,34,605840,547858,345,accepted,0,yes,sonnet-r2,1
-2026-10-09,sweep/leak-scan-45-files,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,33,302928,248793,181,accepted,0,yes,sonnet-r2,1
-2026-10-09,generalize/skill-to-public,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,34,223682,179334,319,rejected,n/a,no,sonnet-r2,0.925
-2026-10-09,write-pl/linkedin-post,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,42,336853,295155,350,accepted,0,yes,sonnet-r2,1
-2026-10-09,build/contact-merge-cli,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,33,342084,298901,217,accepted,0,yes,sonnet-r2,1
-2026-10-09,diagnose-open/duplicate-mails-open,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,17,306000,247480,41,accepted,0,yes,do-sonnet-r1,1
-2026-10-09,diagnose-open/duplicate-mails-open,claude-sonnet-5-5,high,claude-code 2.1.296,unknown,22,307527,252429,45,accepted,0,yes,do-sonnet-r2,1
-2026-10-09,classify/email-155,claude-opus-5-5,high,claude-code 2.1.296,unknown,99,588141,510266,77,accepted,0,yes,opus-r1,1
-2026-10-09,fix/invoice-package,claude-opus-5-5,high,claude-code 2.1.296,unknown,116,862212,806610,594,accepted,0,yes,opus-r1,1
-2026-10-09,diagnose/duplicate-mails,claude-opus-5-5,high,claude-code 2.1.296,unknown,45,554485,489886,810,accepted,0,yes,opus-r1,1
-2026-10-09,sweep/leak-scan-45-files,claude-opus-5-5,high,claude-code 2.1.296,unknown,50,577996,520120,285,accepted,0,yes,opus-r1,1
-2026-10-09,generalize/skill-to-public,claude-opus-5-5,high,claude-code 2.1.296,unknown,54,343451,298248,366,accepted,0,yes,opus-r1,1
-2026-10-09,write-pl/linkedin-post,claude-opus-5-5,high,claude-code 2.1.296,unknown,64,404809,360973,209,accepted,0,yes,opus-r1,1
-2026-10-09,build/contact-merge-cli,claude-opus-5-5,high,claude-code 2.1.296,unknown,56,350886,304772,444,accepted,0,yes,opus-r1,1
-2026-10-09,classify/email-155,claude-opus-5-5,high,claude-code 2.1.296,unknown,101,671124,594838,426,accepted,0,yes,opus-r2,1
-2026-10-09,fix/invoice-package,claude-opus-5-5,high,claude-code 2.1.296,unknown,68,564223,514167,666,accepted,0,yes,opus-r2,1
-2026-10-09,diagnose/duplicate-mails,claude-opus-5-5,high,claude-code 2.1.296,unknown,40,458582,396238,817,accepted,0,yes,opus-r2,1
-2026-10-09,sweep/leak-scan-45-files,claude-opus-5-5,high,claude-code 2.1.296,unknown,51,446085,389303,269,accepted,0,yes,opus-r2,1
-2026-10-09,generalize/skill-to-public,claude-opus-5-5,high,claude-code 2.1.296,unknown,50,288782,243228,356,accepted,0,yes,opus-r2,1
-2026-10-09,write-pl/linkedin-post,claude-opus-5-5,high,claude-code 2.1.296,unknown,56,395141,352768,328,accepted,0,yes,opus-r2,1
-2026-10-09,build/contact-merge-cli,claude-opus-5-5,high,claude-code 2.1.296,unknown,50,347937,302730,464,accepted,0,yes,opus-r2,1
-2026-10-09,diagnose-open/duplicate-mails-open,claude-opus-5-5,high,claude-code 2.1.296,unknown,27,399665,333621,62,accepted,0,yes,do-opus-r1,1
-2026-10-09,diagnose-open/duplicate-mails-open,claude-opus-5-5,high,claude-code 2.1.296,unknown,26,472672,407343,68,accepted,0,yes,do-opus-r2,1
-2026-10-09,classify/email-155,claude-fable-5-1,high,claude-code 2.1.296,unknown,174,770415,682201,902,accepted,0,yes,fable-r1,1
-2026-10-09,fix/invoice-package,claude-fable-5-1,high,claude-code 2.1.296,unknown,162,495078,444608,771,accepted,0,yes,fable-r1,1
-2026-10-09,diagnose/duplicate-mails,claude-fable-5-1,high,claude-code 2.1.296,unknown,77,606530,540449,1010,accepted,0,yes,fable-r1,1
-2026-10-09,sweep/leak-scan-45-files,claude-fable-5-1,high,claude-code 2.1.296,unknown,177,457803,399659,349,accepted,0,yes,fable-r1,1
-2026-10-09,generalize/skill-to-public,claude-fable-5-1,high,claude-code 2.1.296,unknown,70,352621,307103,387,accepted,0,yes,fable-r1,1
-2026-10-09,write-pl/linkedin-post,claude-fable-5-1,high,claude-code 2.1.296,unknown,240,598195,548640,292,accepted,0,yes,fable-r1,1
-2026-10-09,build/contact-merge-cli,claude-fable-5-1,high,claude-code 2.1.296,unknown,91,479799,432025,500,accepted,0,yes,fable-r1,1
+2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,140,637176,516346,794,accepted,0,yes,haiku-r1,0.9806
+2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,138,924431,859091,4683,accepted,0,yes,haiku-r1,1
+2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,69,850699,770024,356,accepted,0,yes,haiku-r1,1
+2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,70,493657,423398,157,accepted,0,yes,haiku-r1,0.9828
+2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,66,358402,309914,593,accepted,0,yes,haiku-r1,1
+2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,110,629975,567291,946,accepted,0,yes,haiku-r1,1
+2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,153,461698,403900,464,accepted,0,yes,haiku-r1,1
+2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,148,695262,592887,328,accepted,0,yes,haiku-r2,0.9871
+2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,67,523184,465745,537,accepted,0,yes,haiku-r2,1
+2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,57,651554,568182,530,accepted,0,yes,haiku-r2,1
+2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,89,566516,493043,445,accepted,0,yes,haiku-r2,1
+2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,40,361008,311502,600,accepted,0,yes,haiku-r2,1
+2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,68,363406,311497,589,accepted,0,yes,haiku-r2,1
+2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,147,377835,329744,398,accepted,0,yes,haiku-r2,1
+2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,18,301052,244657,56,accepted,0,yes,haiku-r3,0.9871
+2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,36,162874,121663,24,accepted,0,yes,haiku-r3,1
+2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,57,953062,859771,86,accepted,0,yes,haiku-r3,1
+2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,68,440464,373331,70,accepted,0,yes,haiku-r3,1
+2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,45,358130,309609,250,accepted,0,yes,haiku-r3,1
+2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,66,435495,384101,353,accepted,0,yes,haiku-r3,1
+2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,66,421896,367601,75,accepted,0,yes,haiku-r3,1
+2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,20,416787,357648,153,accepted,0,yes,haiku-r4,0.9871
+2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,5,102814,67009,28,accepted,0,yes,haiku-r4,1
+2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
+2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
+2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
+2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
+2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r4,1
+2026-10-09,classify/email-155,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,0.9806
+2026-10-09,fix/invoice-package,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
+2026-10-09,diagnose/duplicate-mails,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
+2026-10-09,sweep/leak-scan-45-files,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
+2026-10-09,generalize/skill-to-public,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
+2026-10-09,write-pl/linkedin-post,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
+2026-10-09,build/contact-merge-cli,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,unknown,unknown,unknown,unknown,accepted,0,yes,haiku-r5,1
+2026-10-09,diagnose-open/duplicate-mails-open,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,21,330195,264062,38,accepted,0,yes,do-haiku-r1,1
+2026-10-09,diagnose-open/duplicate-mails-open,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,23,448918,385722,65,accepted,0,yes,do-haiku-r2,1
+2026-10-09,diagnose-open/duplicate-mails-open,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,26,493442,439162,87,accepted,0,yes,do-haiku-r3,0.4
+2026-10-09,classify/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,54,414293,346639,935,accepted,0,yes,fhaiku-r1,n/a
+2026-10-09,classify/email-155+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,165,417436,332500,38,accepted,0,yes,fhaiku-r1,0.9806
+2026-10-09,fix/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,47,283681,239760,2824,accepted,0,yes,fhaiku-r1,n/a
+2026-10-09,fix/invoice-package+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,127,765004,707310,462,accepted,0,yes,fhaiku-r1,1
+2026-10-09,diagnose/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,56,508681,450057,1338,accepted,0,yes,fhaiku-r1,n/a
+2026-10-09,diagnose/duplicate-mails+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,58,547343,479184,448,accepted,0,yes,fhaiku-r1,1
+2026-10-09,sweep/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,51,302128,248450,3235,accepted,0,yes,fhaiku-r1,n/a
+2026-10-09,sweep/leak-scan-45-files+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,76,516115,441450,1157,accepted,0,yes,fhaiku-r1,1
+2026-10-09,generalize/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,46,277187,235254,1009,accepted,0,yes,fhaiku-r1,n/a
+2026-10-09,generalize/skill-to-public+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,51,305848,253181,40,accepted,0,yes,fhaiku-r1,1
+2026-10-09,write-pl/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,129,216125,177306,1262,accepted,0,yes,fhaiku-r1,n/a
+2026-10-09,write-pl/linkedin-post+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,84,326761,268956,419,accepted,0,yes,fhaiku-r1,1
+2026-10-09,build/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,56,341816,298408,2564,accepted,0,yes,fhaiku-r1,n/a
+2026-10-09,build/contact-merge-cli+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,114,957100,890589,686,accepted,0,yes,fhaiku-r1,1
+2026-10-09,classify/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,61,442240,378252,2318,accepted,0,yes,fhaiku-r2,n/a
+2026-10-09,classify/email-155+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,249,746439,670568,1384,accepted,0,yes,fhaiku-r2,1
+2026-10-09,fix/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,58,290701,245714,836,accepted,0,yes,fhaiku-r2,n/a
+2026-10-09,fix/invoice-package+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,99,635770,571911,318,accepted,0,yes,fhaiku-r2,1
+2026-10-09,diagnose/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,50,548543,478993,1213,accepted,0,yes,fhaiku-r2,n/a
+2026-10-09,diagnose/duplicate-mails+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,44,697228,632569,401,accepted,0,yes,fhaiku-r2,1
+2026-10-09,sweep/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,46,358211,306554,2000,accepted,0,yes,fhaiku-r2,n/a
+2026-10-09,sweep/leak-scan-45-files+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,124,1738675,1655527,636,accepted,0,yes,fhaiku-r2,1
+2026-10-09,generalize/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,40,219629,179569,2233,accepted,0,yes,fhaiku-r2,n/a
+2026-10-09,generalize/skill-to-public+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,62,315707,259864,347,accepted,0,yes,fhaiku-r2,1
+2026-10-09,write-pl/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,28,270865,232790,1057,accepted,0,yes,fhaiku-r2,n/a
+2026-10-09,write-pl/linkedin-post+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,49,365638,316852,281,accepted,0,yes,fhaiku-r2,1
+2026-10-09,build/fable-plan-for-haiku,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,52,280385,238009,2847,accepted,0,yes,fhaiku-r2,n/a
+2026-10-09,build/contact-merge-cli+fable-plan,claude-haiku-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,158,633315,568067,356,accepted,0,yes,fhaiku-r2,1
+2026-10-09,classify/email-155,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,76,481047,386570,149,accepted,0,yes,sonnet-r1,1
+2026-10-09,fix/invoice-package,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,50,350795,303453,681,accepted,0,yes,sonnet-r1,1
+2026-10-09,diagnose/duplicate-mails,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,30,501283,436146,287,accepted,0,yes,sonnet-r1,1
+2026-10-09,sweep/leak-scan-45-files,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,38,375255,314606,193,accepted,0,yes,sonnet-r1,1
+2026-10-09,generalize/skill-to-public,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,42,225544,179878,220,accepted,0,yes,sonnet-r1,1
+2026-10-09,write-pl/linkedin-post,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,66,581633,537508,192,accepted,0,yes,sonnet-r1,1
+2026-10-09,build/contact-merge-cli,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,37,280601,237540,401,accepted,0,yes,sonnet-r1,1
+2026-10-09,classify/email-155,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,85,482808,405939,292,accepted,0,yes,sonnet-r2,1
+2026-10-09,fix/invoice-package,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,47,350941,303572,820,accepted,0,yes,sonnet-r2,1
+2026-10-09,diagnose/duplicate-mails,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,34,605840,547858,345,accepted,0,yes,sonnet-r2,1
+2026-10-09,sweep/leak-scan-45-files,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,33,302928,248793,181,accepted,0,yes,sonnet-r2,1
+2026-10-09,generalize/skill-to-public,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,34,223682,179334,319,rejected,n/a,no,sonnet-r2,0.925
+2026-10-09,write-pl/linkedin-post,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,42,336853,295155,350,accepted,0,yes,sonnet-r2,1
+2026-10-09,build/contact-merge-cli,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,33,342084,298901,217,accepted,0,yes,sonnet-r2,1
+2026-10-09,diagnose-open/duplicate-mails-open,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,17,306000,247480,41,accepted,0,yes,do-sonnet-r1,1
+2026-10-09,diagnose-open/duplicate-mails-open,claude-sonnet-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,22,307527,252429,45,accepted,0,yes,do-sonnet-r2,1
+2026-10-09,classify/email-155,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,99,588141,510266,77,accepted,0,yes,opus-r1,1
+2026-10-09,fix/invoice-package,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,116,862212,806610,594,accepted,0,yes,opus-r1,1
+2026-10-09,diagnose/duplicate-mails,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,45,554485,489886,810,accepted,0,yes,opus-r1,1
+2026-10-09,sweep/leak-scan-45-files,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,50,577996,520120,285,accepted,0,yes,opus-r1,1
+2026-10-09,generalize/skill-to-public,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,54,343451,298248,366,accepted,0,yes,opus-r1,1
+2026-10-09,write-pl/linkedin-post,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,64,404809,360973,209,accepted,0,yes,opus-r1,1
+2026-10-09,build/contact-merge-cli,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,56,350886,304772,444,accepted,0,yes,opus-r1,1
+2026-10-09,classify/email-155,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,101,671124,594838,426,accepted,0,yes,opus-r2,1
+2026-10-09,fix/invoice-package,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,68,564223,514167,666,accepted,0,yes,opus-r2,1
+2026-10-09,diagnose/duplicate-mails,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,40,458582,396238,817,accepted,0,yes,opus-r2,1
+2026-10-09,sweep/leak-scan-45-files,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,51,446085,389303,269,accepted,0,yes,opus-r2,1
+2026-10-09,generalize/skill-to-public,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,50,288782,243228,356,accepted,0,yes,opus-r2,1
+2026-10-09,write-pl/linkedin-post,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,56,395141,352768,328,accepted,0,yes,opus-r2,1
+2026-10-09,build/contact-merge-cli,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,50,347937,302730,464,accepted,0,yes,opus-r2,1
+2026-10-09,diagnose-open/duplicate-mails-open,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,27,399665,333621,62,accepted,0,yes,do-opus-r1,1
+2026-10-09,diagnose-open/duplicate-mails-open,claude-opus-5-5,high,claude-code unknown (2.1.295 or 2.1.296),unknown,26,472672,407343,68,accepted,0,yes,do-opus-r2,1
+2026-10-09,classify/email-155,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,174,770415,682201,902,accepted,0,yes,fable-r1,1
+2026-10-09,fix/invoice-package,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,162,495078,444608,771,accepted,0,yes,fable-r1,1
+2026-10-09,diagnose/duplicate-mails,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,77,606530,540449,1010,accepted,0,yes,fable-r1,1
+2026-10-09,sweep/leak-scan-45-files,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,177,457803,399659,349,accepted,0,yes,fable-r1,1
+2026-10-09,generalize/skill-to-public,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,70,352621,307103,387,accepted,0,yes,fable-r1,1
+2026-10-09,write-pl/linkedin-post,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,240,598195,548640,292,accepted,0,yes,fable-r1,1
+2026-10-09,build/contact-merge-cli,claude-fable-5-1,high,claude-code unknown (2.1.295 or 2.1.296),unknown,91,479799,432025,500,accepted,0,yes,fable-r1,1
 2026-10-09,classify/email-155,gpt-6.1-sol,high,codex-cli 0.160.0,workspace-write,177,360705,296704,4511,accepted,0,yes,codex-sol-r1,0.9806
 2026-10-09,fix/invoice-package,gpt-6.1-sol,high,codex-cli 0.160.0,workspace-write,166,191565,154112,4806,accepted,0,yes,codex-sol-r1,1
 2026-10-09,diagnose/duplicate-mails,gpt-6.1-sol,high,codex-cli 0.160.0,workspace-write,78,239978,189440,1818,accepted,0,yes,codex-sol-r1,1

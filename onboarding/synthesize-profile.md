@@ -49,7 +49,7 @@ Every placeholder in the template is listed here with the file it lives in and w
 1. Show the summary described in `START.md` section 4. Wait for an explicit accept.
 2. For every file that already exists in the context folder, copy it first to `archive/<YYYYMMDD-HHMMSS>/<same relative path>`. Never overwrite without that copy. The archive is never edited afterwards.
 3. Write the files. Do not delete anything.
-4. Run `python3 onboarding/check_placeholders.py <context folder>`. Exit code 0 means no unfilled placeholders. The scan skips `archive/` and hidden folders. Anything else it lists is yours to fix before you report success.
+4. Run `python3 onboarding/check_placeholders.py <context folder>`. Exit code 0 means every file was read and none holds an unfilled placeholder. The scan skips `archive/`, hidden folders and binary files. A file that is not UTF-8 (for example an ANSI or cp1250 save) or cannot be read makes the check exit 2 and is named; re-save it as UTF-8. Anything else it lists is yours to fix before you report success.
 5. Report what was written, what is still `unknown`, and that the first version of the assistant will be judged on the five acceptance cases in `company.md`.
 
 ## What this step must not do

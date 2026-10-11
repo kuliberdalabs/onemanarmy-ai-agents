@@ -293,9 +293,11 @@ class HoldTestTests(unittest.TestCase):
                 self.assertEqual(cmd[cmd.index("--permission-prompts") + 1], "none")
 
     def test_tier0_run_requires_the_disposable_host_flag(self):
-        with mock.patch.object(hold_test.subprocess, "run") as run:
+        with mock.patch.object(hold_test.subprocess, "run") as run, \
+                contextlib.redirect_stderr(io.StringIO()) as err:
             self.assertEqual(hold_test.main(["run", "--tier", "0"]), 2)
             run.assert_not_called()
+        self.assertIn("refusing: tier 0", err.getvalue())
 
     def test_world_reads_clean_before_any_action(self):
         import shutil
