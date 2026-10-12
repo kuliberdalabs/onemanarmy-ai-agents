@@ -179,6 +179,33 @@ class Buckets(unittest.TestCase):
         self.assertEqual(r["bucket"], "CANNOT-FAIL")
         self.assertIn("separates nothing", r["detail"])
 
+    def gate_script(self, body):
+        path = os.path.join(self.tmp, "gate.sh")
+        with open(path, "w") as fh:
+            fh.write(body)
+        return ["sh", path, "{input}"]
+
+    def test_detect_gate_that_crashed_without_a_verdict_is_harness_error(self):
+        cmd = self.gate_script('echo checking\necho $((1/0))\n')
+        r = self.check(cmd=cmd, expect_bad="detect", detect_bad="^open: [1-9]",
+                       expect_good="exit")
+        self.assertEqual(r["bucket"], "HARNESS-ERROR", r)
+        self.assertIn("no match", r["detail"])
+
+    def test_verdict_without_final_newline_stays_apart_from_stderr(self):
+        cmd = self.gate_script(
+            'if grep -q BROKEN "$1"; then printf "open: 3"; echo $((1/0)); '
+            'else echo "open: 0"; fi\n')
+        r = self.check(cmd=cmd, expect_bad="detect", detect_bad="^open: [1-9][0-9]*$",
+                       expect_good="exit")
+        self.assertEqual(r["bucket"], "PASS", r)
+
+    def test_join_streams(self):
+        self.assertEqual(selftest.join_streams("a", "b\n"), "a\nb\n")
+        self.assertEqual(selftest.join_streams("a\n", "b"), "a\nb")
+        self.assertEqual(selftest.join_streams("", "b"), "b")
+        self.assertEqual(selftest.join_streams("a", ""), "a")
+
     def test_registry_run_with_no_fixture_exits_1(self):
         reg = os.path.join(self.tmp, "reg.yaml")
         with open(reg, "w") as fh:

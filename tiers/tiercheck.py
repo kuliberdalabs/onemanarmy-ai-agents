@@ -50,8 +50,10 @@ EXEC_MODE_RANK = {"full": 0, "auto": 1, "ask": 2, "allowlist": 3, "deny": 4}
 SANDBOX_MODE_RANK = {"off": 0, "non-main": 1, "all": 2}
 WORKSPACE_ACCESS_RANK = {"rw": 0, "ro": 1, "none": 2}
 VISIBILITY_RANK = {"all": 0, "agent": 1, "tree": 2, "self": 3}
+# plan and dontAsk both refuse what is not already allowed, so they share a
+# rank: moving between them is not counted as loosening.
 CLAUDE_MODE_RANK = {"bypassPermissions": 0, "auto": 1, "acceptEdits": 2,
-                    "default": 3, "dontAsk": 4}
+                    "default": 3, "dontAsk": 4, "plan": 4}
 
 OPENCLAW_REQUIRED = [
     ("tools", "profile"),
@@ -139,10 +141,11 @@ def expand_openclaw_deny(deny: List[str]) -> Set[str]:
 
 def _rank_check(problems: List[str], label: str, ranks: Dict[str, int],
                 values: Dict[int, Any]) -> None:
-    for t, v in values.items():
-        if v not in ranks:
-            problems.append("%s: tier %d has unknown value %r" % (label, t, v))
-            return
+    unknown = [(t, v) for t, v in values.items() if v not in ranks]
+    for t, v in unknown:
+        problems.append("%s: tier %d has unknown value %r" % (label, t, v))
+    if unknown:
+        return
     for lo, hi in ((0, 1), (1, 2)):
         if ranks[values[hi]] < ranks[values[lo]]:
             problems.append("%s: tier %d (%s) is looser than tier %d (%s)"

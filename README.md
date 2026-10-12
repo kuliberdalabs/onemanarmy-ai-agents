@@ -40,7 +40,7 @@ python3 tiers/tiercheck.py
 
 Each exits 0. What they print, in the same order:
 
-1. `Ran 314 tests` and `OK`: core 63, tiers 131, the placeholder checker and the skill validator 62, the first job 53, the shell blocks in these docs 5.
+1. `Ran 319 tests` and `OK`: core 66, tiers 133, the placeholder checker and the skill validator 62, the first job 53, the shell blocks in these docs 5.
 2. `6/6 reproduced`, on Python 3.11 or newer. On older Python, `dash-arg-help.sh` reports `NOT REPRODUCED: needs python3 >= 3.11` and the runner prints `5/6 reproduced` and exits 1.
 3. `ok session-end` and `All 1 skill(s) valid`.
 4. `meta triangle holds: always_pass=CANNOT-FAIL, honest_gate=PASS, always_fail=FALSE-ALARM`.

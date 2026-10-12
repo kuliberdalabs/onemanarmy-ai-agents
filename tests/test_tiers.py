@@ -201,6 +201,19 @@ class MonotonicTests(unittest.TestCase):
         docs[1]["permissions"]["defaultMode"] = "yolo"
         self.assertTrue(any("documented mode" in p for p in tiercheck.check_claude(docs)))
 
+    def test_claude_plan_mode_has_a_rank(self):
+        problems = []
+        tiercheck._rank_check(problems, "m", tiercheck.CLAUDE_MODE_RANK,
+                              {0: "bypassPermissions", 1: "acceptEdits", 2: "plan"})
+        self.assertEqual(problems, [])
+        self.assertEqual(set(tiercheck.CLAUDE_MODE_RANK), tiercheck.CLAUDE_MODES)
+
+    def test_every_unknown_rank_value_is_reported(self):
+        problems = []
+        tiercheck._rank_check(problems, "m", tiercheck.EXEC_MODE_RANK,
+                              {0: "x", 1: "y", 2: "deny"})
+        self.assertEqual(len(problems), 2, problems)
+
     def test_claude_shadowed_allow_rule_is_caught(self):
         docs = self._cc()
         docs[1]["permissions"]["allow"].append("Bash(rm *)")

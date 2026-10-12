@@ -362,6 +362,14 @@ def _exception_line(text):
     return ""
 
 
+def join_streams(first, second):
+    """Both streams as one text, without gluing the last line of the first onto
+    the first line of the second when the first lacks a final newline."""
+    if first and second and not first.endswith("\n"):
+        return first + "\n" + second
+    return first + second
+
+
 def before_traceback(stdout, stderr):
     """Everything the gate printed before its first traceback, stdout first."""
     m = _TRACEBACK.search(stdout)
@@ -402,7 +410,8 @@ def interpreter_error(cmd, stdout, stderr, input_path=None, strip=False):
         r"|^[A-Za-z_][A-Za-z0-9_]*:\d+:\s" % alts          # a zsh function: "name:line: ..."
     )
     if strip:
-        return "\n".join(line for line in (stdout + stderr).splitlines() if not shape.match(line))
+        return "\n".join(line for line in join_streams(stdout, stderr).splitlines()
+                         if not shape.match(line))
     for line in (stderr + "\n" + stdout).splitlines():
         if shape.match(line):
             head, sep, rest = line.strip().partition(": ")
@@ -517,7 +526,7 @@ def check_entry(entry, base_dir, timeout_default):
                 res["detail"] = f"{side} fixture: {err}"
                 res[f"{side}_evidence"] = err
                 return res
-            out = stdout + stderr
+            out = join_streams(stdout, stderr)
             died = died_without_verdict(rc, stdout, stderr, pat if mode == "detect" else None)
             if died:
                 res["bucket"] = HARNESS_ERROR
@@ -544,13 +553,18 @@ def check_entry(entry, base_dir, timeout_default):
                 res[f"{side}_evidence"] = f"exit={rc}"
                 res[f"{side}_tail"] = out.strip().splitlines()[-3:]
                 return res
-            if mode == "detect" and pat and re.search(pat, out, re.MULTILINE):
+            if mode == "detect" and pat:
+                # A crash with no verdict outside the interpreter's own error lines
+                # is not a MISS or a HIT: the gate never judged its input.
                 rest = interpreter_error(cmd, stdout, stderr, path, strip=True)
-                if not re.search(pat, rest, re.MULTILINE):
-                    line = interpreter_error(cmd, stdout, stderr, path)
+                line = interpreter_error(cmd, stdout, stderr, path)
+                if line and not re.search(pat, rest, re.MULTILINE):
+                    if re.search(pat, out, re.MULTILINE):
+                        what = f"the only match for /{pat}/ is the interpreter's own error"
+                    else:
+                        what = f"no match for /{pat}/ and the interpreter's own error"
                     res["bucket"] = HARNESS_ERROR
-                    res["detail"] = (f"{side} fixture: the only match for /{pat}/ is the "
-                                     f"interpreter's own error ({(line or '')[:160]}); a gate that "
+                    res["detail"] = (f"{side} fixture: {what} ({line[:160]}); a gate that "
                                      "crashed has not judged its input")
                     res[f"{side}_evidence"] = f"exit={rc}"
                     res[f"{side}_tail"] = out.strip().splitlines()[-3:]
