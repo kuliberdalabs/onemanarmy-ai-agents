@@ -6,7 +6,7 @@ Trzy nawyki trzymają to w całości. Gdy agent pisze „gotowe”, to tylko dek
 
 Dokumentacja jest po angielsku. Wyjątkiem jest kwestionariusz onboardingu, który ma też wersję polską: [onboarding/questionnaire.pl.md](onboarding/questionnaire.pl.md). Ta strona mówi, od czego zacząć.
 
-Wersja 0.1.0 z 2026-10-13. Potrzebujesz `git`, `bash`, `zsh` i Pythona 3.11 lub nowszego, bez dodatkowych bibliotek. macOS ma git, bash i zsh, ale jego `python3` to 3.9, więc zainstaluj Pythona 3.11 lub nowszego (instalator z python.org albo `brew install python`) i sprawdź, co pokazuje `python3 --version`.
+Wersja 0.1.0 z 2026-10-16. Potrzebujesz `git`, `bash`, `zsh` i Pythona 3.11 lub nowszego, bez dodatkowych bibliotek. macOS ma git, bash i zsh, ale jego `python3` to 3.9, więc zainstaluj Pythona 3.11 lub nowszego (instalator z python.org albo `brew install python`) i sprawdź, co pokazuje `python3 --version`.
 
 ## Od czego zacząć
 

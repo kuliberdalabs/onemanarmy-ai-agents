@@ -2,7 +2,7 @@
 
 Notable changes to this repository. Versions follow [Semantic Versioning](https://semver.org/).
 
-## [0.1.0] - 2026-10-13
+## [0.1.0] - 2026-10-16
 
 First release. It needs Python 3.11 or newer, bash and zsh, and nothing outside the standard library.
 

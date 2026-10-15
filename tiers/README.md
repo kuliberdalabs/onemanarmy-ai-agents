@@ -274,6 +274,6 @@ Run tier 0 first. It is the positive control: if the effect does not appear at t
 | `openclaw/tier{0,1,2}.json5` | OpenClaw config fragments with a doc citation per key |
 | `tiercheck.py`, `json5lite.py` | static checks and the tolerant reader |
 | `hold-tests.json`, `hold_test.py` | behavioral cases and the runner |
-| `../tests/test_tiers.py` | 61 unit tests: the checker, the reader, the runner and its liveness rule |
+| `../tests/test_tiers.py` | 63 unit tests: the checker, the reader, the runner and its liveness rule |
 | `../tests/test_tier_overlays.py` | 24 unit tests: the shipped overlays and the checker's pins |
 | `../tests/test_hold_test.py` | 46 unit tests: the runner's false-green fixes |
